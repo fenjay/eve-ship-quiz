@@ -1,0 +1,115 @@
+﻿@model Eve_Ship_ID.Models.ShipQuiz
+
+@{
+    ViewBag.Title = "Ship Identification Quiz";
+}
+<script>
+    function HandleCompletion() {
+        //alert($("#completionstatus").text());
+        /* 
+        if initial, then runGetAnswer  
+        if rightanswer, then change to green
+        if wronganswer, then change to red
+        if done, submit NextQuestionForm
+       
+        */
+        if ($("#completionstatus").text() == "initial") {
+            //$("#completiondiv").css("background-color", "blue");
+            GetAnswer();
+        }
+        if ($("#completionstatus").text() == "nextquestion") {
+            nextQuestionForm.submit();
+        }
+    }
+
+    function GetAnswer() {
+        $("#mainformSubmit").css("display","none");
+        question = "@Model.ShipName";
+        answer = $("input[type='radio'][name='typeOption']:checked").val();  //document.getElementById("quizform.typeOption");
+
+
+        correctanswer = $.get("/GetQuizPage/GetCorrectAnswer", { id: question })
+        //.done(function (data) { alert(data); });
+        .done(function (data) {
+            if (data == answer) {
+                HandleRightAnswer();
+            }
+            else {
+                HandleWrongAnswer();
+            }
+            //$("#nextQuestionDiv").css("display", "inline-block");
+            //$("#nextQuestionForm").css("style", "visibility:visible");
+            $("#completionstatus").text('nextquestion');
+            //alert($("#completionstatus").text());
+        });
+      
+    }
+
+    function HandleRightAnswer() {
+        score = $("#startValue").val();
+        //$("#rightanswerdiv").css("display", "inline-block");
+        $("#completiondiv").css("background-color", "green");
+        $("#endValue").val(score + "1");
+    }
+
+    function HandleWrongAnswer() {
+        score = $("#startValue").val();
+        //$("#wronganswerdiv").css("display", "inline-block");
+        $("#completiondiv").css("background-color", "red");
+        $("#endValue").val(score + "0");
+    }
+
+
+</script>
+@if (@Model.score.Length == 0)
+{
+   <h2>Start Quiz</h2>
+}
+else if (@Model.score.Length < 20)
+{
+   <p class="scoreheader">Current Score:&nbsp;@Model.ParseScore()</p>
+   <br /><a href="/GetQuizPage">Start Over</a>
+}
+else
+{
+    <h2>Final Score:</h2>@Model.ParseScore()
+   <br /><a href="/GetQuizPage">Start Over</a>
+}
+
+<!--div class="outer"-->
+<div class="innerquiz">
+<div class="quizheader">@Model.ShipName</div>
+
+<form id="quizform">
+@foreach (var name in @Model.ShipTypeOptions)
+{
+    <input type="radio" name="typeOption" value="@name">@name <br/>
+}
+</input>
+
+<!--input type="button" id="mainformSubmit" value="Submit Answer" onclick="GetAnswer()" /-->
+
+</form>
+
+<div class="correctanswer" id="rightanswerdiv" style="display:none">Correct</div>
+<div class="wronganswer" id="wronganswerdiv" style="display:none">Incorrect</div>
+
+@if (@Model.score.Length < 20)
+{
+<div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div>
+}
+
+<div id="completiondiv" class="completion" onclick="HandleCompletion();">
+</div>
+<label id="completionstatus" style="visibility:hidden">initial</label>
+
+</div>
+
+<!--/div-->
+<form action="/GetQuizPage" method="post" id="nextQuestionForm" style="visibility:hidden">
+<input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
+<input id="endValue" name="endValue" type="hidden" />
+<input id="nextpagesubmit" type="submit" value="Next Page"/>
+</form>
+
+

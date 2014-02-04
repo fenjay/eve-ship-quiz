@@ -1,0 +1,24 @@
+﻿@model Eve_Ship_ID.Models.Ship
+
+@{
+    ViewBag.Title = "ShipInfo";
+}
+
+
+@if (Model.Name != null)
+{
+<h2>ShipInfo: @Model.Name</h2>
+
+<ul>
+<li>Name: @Model.Name</li>
+<li>Name: @Model.Type</li>
+</ul>
+}
+
+<form action="/Main/ShipInfo" method="post">
+<input id="shipname" type="text" name="Name" />
+
+<input type="submit" value="Get Info" />
+</form>
+
+
