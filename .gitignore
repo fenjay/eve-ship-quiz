@@ -130,7 +130,14 @@ publish/
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
+
+#jquery and knockout
+Scripts/jquery*
+Scripts/knockout*
+
+#asp.net mvc themes
+Content/themes/*
 
 # Windows Azure Build Output
 csx
