@@ -11,20 +11,47 @@ namespace eve_api
 
         public static string GetShipType(string shipName)
         {
-            var ship = string.Empty;
+            
+            return GetShipFullInfo(shipName).ShipType;
+        }
 
+        public static List<String> GetRandomShip(int nbrShips, int quizLevel)
+        {
+            return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel);
+        }
+
+        private static ShipFullInfo GetShipFullInfo(string shipName)
+        {
+
+            var ship = new ShipFullInfo();
+
+
+            ////TODO: if implementing tests, add "Goru's Shuttle" to test parameter scrubbing
+            //if (shipName.Contains("'"))
+            //{
+            //    shipName.Replace("'", "''");
+            //}
+            
             var sqlConn = new SqlConnection("Server=localhost;Database=CCP_Data;User Id=APIGetterUser;Password=password1;");
             var sqlCmd = new SqlCommand();
             try
             {
 
                 sqlConn.Open();
-                var sql = "select groupName as shipType from invTypes t inner join invGroups g on g.groupID = t.groupID inner join chrRaces race on race.raceID = t.raceID where g.categoryID = 6 and t.published = 1 and typeName = '" + shipName + "'";
+                var shipNameParam = new SqlParameter("ShipName", shipName);
+                var sql = "select typeID, ShipName, ShipType, description from ShipTypesView where ShipName = @ShipName";
+                sqlCmd.Parameters.Add(shipNameParam);
                 sqlCmd.CommandText = sql;
-
                 sqlCmd.Connection = sqlConn;
-                ship = sqlCmd.ExecuteScalar().ToString();
-               
+                var shipReader = sqlCmd.ExecuteReader();
+
+                if (shipReader.Read())
+                {
+                    ship.typeID = Convert.ToInt32(shipReader.GetValue(0));
+                    ship.ShipName = shipReader.GetValue(1).ToString();
+                    ship.ShipType = shipReader.GetValue(2).ToString();
+                    ship.description = shipReader.GetValue(3).ToString();
+                }
 
             }
             catch (Exception ex)
@@ -37,14 +64,10 @@ namespace eve_api
             }
 
             return ship;
+
         }
 
-        public static List<String> GetRandomShip(int nbrShips)
-        {
-            return GetRandomFromShipTypeView(nbrShips, "ShipName");
-        }
-
-        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column)
+        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, int quizLevel)
         {
             var ship = new List<String>();
 
@@ -53,7 +76,7 @@ namespace eve_api
             try
             {
                 sqlConn.Open();
-                var sqlCount = "select count(distinct " + column + ") from dbo.ShipTypesView";
+                var sqlCount = "select count(distinct " + column + ") from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
                 
                 sqlCmd.CommandText = sqlCount;
                 sqlCmd.Connection = sqlConn;
@@ -86,7 +109,7 @@ namespace eve_api
                 //    {
                         //var shipNbr = rand.Next(1, shipCount);
 
-                        var sql = "select distinct " + column  + " from dbo.ShipTypesView";
+                        var sql = "select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
                         sqlCmd.CommandText = sql;
 
                         sqlCmd.Connection = sqlConn;
@@ -123,19 +146,9 @@ namespace eve_api
             return ship;
         }
 
-        public static List<String> GetRandomShipType(int nbrShipTypes)
+        private static List<string> GetRandomFromShipTypeView(int nbrTypes, string column, string exclude, int quizLevel)
         {
-            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType");
-        }
-
-        public static List<String> GetRandomShipType(int nbrShipTypes, string excludeType)
-        {
-            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", excludeType);
-        }
-
-        private static List<string> GetRandomFromShipTypeView(int nbrTypes, string column, string exclude)
-        {
-            var startingList = GetRandomFromShipTypeView(nbrTypes + 1, "ShipType");
+            var startingList = GetRandomFromShipTypeView(nbrTypes + 1, "ShipType", quizLevel);
             foreach (var item in startingList)
             {
                 if (item == exclude)
@@ -151,11 +164,15 @@ namespace eve_api
             return startingList;
         }
 
-        //public static List<String> GetAllShipTypes()
-        //{
+        public static List<String> GetRandomShipType(int nbrShipTypes, string excludeType, int quizLevel)
+        {
+            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", excludeType, quizLevel);
+        }
 
-        //}
-        
+        public static List<String> GetRandomShipType(int nbrShipTypes, int quizLevel)
+        {
+            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel);
+        }
 
     }
 

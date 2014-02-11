@@ -16,14 +16,14 @@ namespace Eve_Ship_ID.Controllers
 
         public ActionResult Index()
         {
-            var popData = getSingleQuiz();
+            var popData = getSingleQuiz(1);
             return View(popData);
         }
 
         [HttpPost]
         public ActionResult Index(string endValue)
         {
-            var popData = getSingleQuiz();
+            var popData = getSingleQuiz(1);
             popData.score = endValue;
             return View(popData);
         }
@@ -44,15 +44,15 @@ namespace Eve_Ship_ID.Controllers
 
 
 
-        private ShipQuiz getSingleQuiz()
+        private ShipQuiz getSingleQuiz(int quizLevel)
         {
             var rand = new Random();
             var maxIdx = QUIZCOUNT-1;
             var correctItem = rand.Next(0, maxIdx);
 
-            var shipName = eve_api.eve_api.GetRandomShip(1)[0];
+            var shipName = eve_api.eve_api.GetRandomShip(1, quizLevel)[0];
             var correctType = eve_api.eve_api.GetShipType(shipName);
-            var rawShipTypes = eve_api.eve_api.GetRandomShipType(maxIdx, correctType);
+            var rawShipTypes = eve_api.eve_api.GetRandomShipType(maxIdx, correctType,quizLevel);
             
             var shipTypes = new List<string>();
             var j = 0;
