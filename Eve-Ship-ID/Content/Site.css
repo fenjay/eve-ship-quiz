@@ -2,7 +2,7 @@
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     color: #686868;
-    background-color: #222222;
+    background-color: #404040;
 }
 
 header, footer, nav, section {
@@ -92,6 +92,7 @@ div
     cursor: pointer;
     font-size:smaller;
     float:left;
+    display:inline-block;
 }
 
 .outer
@@ -103,23 +104,40 @@ div
 .quizheader
 {
     font-size:x-large;
+    background-color:Aqua;
+    color:Black;
+    width:120px;
+    display:inline-block;
 }
 
 
 .innerquiz
 {
-    width:250px;
-    display: inline-block;
-    float:left;
+    width:1024px;
+    display: table;
+    text-align:center;
 }
 
 .completion
 {
     width:120px;
     height:10px;
-    background-color:Orange;
+    background-color:#404040;
+    display:inline-block;
 }
 
+.answerbar
+{
+    width:480px;
+    height:20px;
+    background-color:#3399FF;
+    vertical-align:middle;
+    margin:10px;
+    text-align:center;
+    font-size:large;
+    color:Black;
+    display:inline-block;
+}
 
 p
 {

@@ -59,6 +59,23 @@
         $("#endValue").val(score + "0");
     }
 
+    function CheckAnswer(i,bar)
+    {
+        var elements = document.getElementsByName('typeOption');
+        elements[i].checked = true;
+        HandleCompletion();
+        $(bar).css("background-color", "green");
+    }
+
+    function TurnBlue(i) {
+        $(i).css("background-color", "blue");
+        $(i).css("color", "white");
+    }
+
+    function TurnLightBlue(i) {
+        $(i).css("background-color", "#3399FF");
+        $(i).css("color", "black");
+    }
 
 </script>
 @if (@Model.score.Length == 0)
@@ -79,33 +96,41 @@ else
 <!--div class="outer"-->
 <div class="innerquiz">
 <div class="quizheader">@Model.ShipName</div>
+<br />
 
-<form id="quizform">
+<form id="quizform" style="display:none">
 @foreach (var name in @Model.ShipTypeOptions)
 {
     <input type="radio" name="typeOption" value="@name">@name <br/>
 }
 </input>
 
-<!--input type="button" id="mainformSubmit" value="Submit Answer" onclick="GetAnswer()" /-->
-
 </form>
+
+<div id="answer1" class="answerbar" onclick="CheckAnswer(0,this)" onmouseover="TurnBlue(this);" onmouseout="TurnLightBlue(this);" > @Model.ShipTypeOptions[0] </div>
+<div id="answer2" class="answerbar" onclick="CheckAnswer(1,this)" onmouseover="TurnBlue(this);" onmouseout="TurnLightBlue(this);"> @Model.ShipTypeOptions[1] </div>
+<div id="answer3" class="answerbar" onclick="CheckAnswer(2,this)" onmouseover="TurnBlue(this);" onmouseout="TurnLightBlue(this);"> @Model.ShipTypeOptions[2] </div>
+<div id="answer4" class="answerbar" onclick="CheckAnswer(3,this)" onmouseover="TurnBlue(this);" onmouseout="TurnLightBlue(this);"> @Model.ShipTypeOptions[3] </div>
+
+<br />
+
+<!--input type="button" id="mainformSubmit" value="Submit Answer" onclick="GetAnswer()" /-->
 
 <div class="correctanswer" id="rightanswerdiv" style="display:none">Correct</div>
 <div class="wronganswer" id="wronganswerdiv" style="display:none">Incorrect</div>
 
+
+<!--div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div-->
+
 @if (@Model.score.Length < 20)
 {
-<div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div>
+<div id="completiondiv" class="completion" onclick="HandleCompletion();"/>
 }
 
-<div id="completiondiv" class="completion" onclick="HandleCompletion();">
 </div>
+
 <label id="completionstatus" style="visibility:hidden">initial</label>
 
-</div>
-
-<!--/div-->
 <form action="/GetQuizPage" method="post" id="nextQuestionForm" style="visibility:hidden">
 <input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
 <input id="endValue" name="endValue" type="hidden" />
