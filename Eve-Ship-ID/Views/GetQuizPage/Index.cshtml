@@ -5,28 +5,38 @@
 }
 <script>
     function HandleCompletion() {
-        //alert($("#completionstatus").text());
         /* 
-        if initial, then runGetAnswer  
-        if rightanswer, then change to green
-        if wronganswer, then change to red
+        THIS FUNCTION MAY BE OBSOLETE
+        elimiated and use HandleAnswer() or NextQuestion()
+        was only needed when same button accepted answer or hit next question
+        idea: on last question, submit = results page
+
+        if initial, then run HandleAnswer  
         if done, submit NextQuestionForm
        
         */
         if ($("#completionstatus").text() == "initial") {
             //$("#completiondiv").css("background-color", "blue");
-            GetAnswer();
+            HandleAnswer();
         }
-        if ($("#completionstatus").text() == "nextquestion") {
+
+
+        if (($("#completionstatus").text() == "nextquestion") && score.length < 20) {
             nextQuestionForm.submit();
         }
+        
+        score = $("#endValue").val();
+        if (score.length > 20) {
+            $("#innerquiz").css("display", "none");
+        }
+
     }
 
-    function GetAnswer() {
+
+    function HandleAnswer() {
         $("#mainformSubmit").css("display","none");
         question = "@Model.ShipName";
-        answer = $("input[type='radio'][name='typeOption']:checked").val();  //document.getElementById("quizform.typeOption");
-
+        answer = $("input[type='radio'][name='typeOption']:checked").val();
 
         correctanswer = $.get("/GetQuizPage/GetCorrectAnswer", { id: question })
         //.done(function (data) { alert(data); });
@@ -37,24 +47,21 @@
             else {
                 HandleWrongAnswer();
             }
-            //$("#nextQuestionDiv").css("display", "inline-block");
-            //$("#nextQuestionForm").css("style", "visibility:visible");
             $("#completionstatus").text('nextquestion');
-            //alert($("#completionstatus").text());
         });
-      
+
     }
 
     function HandleRightAnswer() {
         score = $("#startValue").val();
-        //$("#rightanswerdiv").css("display", "inline-block");
+        $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "green");
         $("#endValue").val(score + "1");
     }
 
     function HandleWrongAnswer() {
         score = $("#startValue").val();
-        //$("#wronganswerdiv").css("display", "inline-block");
+        $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "red");
         $("#endValue").val(score + "0");
     }
@@ -64,17 +71,21 @@
         var elements = document.getElementsByName('typeOption');
         elements[i].checked = true;
         HandleCompletion();
-        $(bar).css("background-color", "green");
+        //$(bar).css("background-color", "green");
     }
 
     function TurnBlue(i) {
+    if ($("#completionstatus").text() != "nextquestion") {
         $(i).css("background-color", "blue");
         $(i).css("color", "white");
+        }
     }
 
     function TurnLightBlue(i) {
-        $(i).css("background-color", "#3399FF");
-        $(i).css("color", "black");
+        if ($("#completionstatus").text() != "nextquestion") {
+            $(i).css("background-color", "#3399FF");
+            $(i).css("color", "black");
+        }
     }
 
 </script>
@@ -84,7 +95,7 @@
 }
 else if (@Model.score.Length < 20)
 {
-   <p class="scoreheader">Current Score:&nbsp;@Model.ParseScore()</p>
+   <p class="scoreheader"><b>Current Score:</b><br />@Model.ParseScore()</p>
    <br /><a href="/GetQuizPage">Start Over</a>
 }
 else
@@ -94,7 +105,7 @@ else
 }
 
 <!--div class="outer"-->
-<div class="innerquiz">
+<div id="innerquiz" class="innerquiz">
 <div class="quizheader">@Model.ShipName</div>
 <br />
 
@@ -114,7 +125,6 @@ else
 
 <br />
 
-<!--input type="button" id="mainformSubmit" value="Submit Answer" onclick="GetAnswer()" /-->
 
 <div class="correctanswer" id="rightanswerdiv" style="display:none">Correct</div>
 <div class="wronganswer" id="wronganswerdiv" style="display:none">Incorrect</div>
@@ -124,7 +134,7 @@ else
 
 @if (@Model.score.Length < 20)
 {
-<div id="completiondiv" class="completion" onclick="HandleCompletion();"/>
+<div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Question</div>
 }
 
 </div>

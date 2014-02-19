@@ -25,7 +25,7 @@ namespace Eve_Ship_ID.Models
                 if (c == '1') correct++;
                 if (c == '0') incorrect++;
             }
-            return "Correct: " + correct.ToString() + ",  Incorrect: " + incorrect.ToString();
+            return "Correct: " + correct.ToString() + " | Incorrect: " + incorrect.ToString();
         }
 
     }

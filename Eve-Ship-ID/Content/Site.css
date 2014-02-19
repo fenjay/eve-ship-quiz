@@ -101,11 +101,13 @@ div
     text-align:center;
 }
 
+/*background-color:#FFA500; eve website header color*/
+
 .quizheader
 {
     font-size:x-large;
-    background-color:Aqua;
-    color:Black;
+    background-color:#000099;
+    color:White;
     width:120px;
     display:inline-block;
 }
@@ -122,8 +124,12 @@ div
 {
     width:120px;
     height:10px;
-    background-color:#404040;
-    display:inline-block;
+    display:none;
+    color:Black;
+    font-family:Arial;
+    cursor:default;
+    font-style:italic;
+    vertical-align:middle;
 }
 
 .answerbar
@@ -137,6 +143,7 @@ div
     font-size:large;
     color:Black;
     display:inline-block;
+    cursor:default;
 }
 
 p
@@ -147,6 +154,7 @@ p
 .scoreheader
 {
     font-size:x-large;
+    font-family:Arial;
    
 }
 
