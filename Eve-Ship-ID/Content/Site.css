@@ -146,6 +146,12 @@ div
     cursor:default;
 }
 
+.quizresults
+{
+    display:none;
+    font-size:xx-large;
+}
+
 p
 {
     font-size:medium;

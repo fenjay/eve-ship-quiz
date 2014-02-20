@@ -20,16 +20,18 @@
             HandleAnswer();
         }
 
-
-        if (($("#completionstatus").text() == "nextquestion") && score.length < 20) {
-            nextQuestionForm.submit();
-        }
-        
         score = $("#endValue").val();
-        if (score.length > 20) {
-            $("#innerquiz").css("display", "none");
-        }
 
+        if (($("#completionstatus").text() == "nextquestion")) {
+            if (score.length < 20) {
+                nextQuestionForm.submit();
+            }
+            else {
+                $("#innerquiz").css("display", "none");
+                $("#quizresults").css("display", "inline-block");
+            }
+        }
+       
     }
 
 
@@ -104,10 +106,11 @@ else
    <br /><a href="/GetQuizPage">Start Over</a>
 }
 
-<!--div class="outer"-->
 <div id="innerquiz" class="innerquiz">
 <div class="quizheader">@Model.ShipName</div>
 <br />
+
+<div id="divider" style="width:75%">
 
 <form id="quizform" style="display:none">
 @foreach (var name in @Model.ShipTypeOptions)
@@ -132,10 +135,22 @@ else
 
 <!--div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div-->
 
-@if (@Model.score.Length < 20)
-{
 <div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Question</div>
-}
+
+</div><!--divider-->
+
+<div id="shipdescription" style="float:right">
+This is a description
+</div>
+
+</div>
+
+</div>
+
+<div id="quizresults" class="quizresults">
+
+  <h2>Final Score:</h2>@Model.ParseScore()
+   <br /><a href="/GetQuizPage">Start Over</a>
 
 </div>
 

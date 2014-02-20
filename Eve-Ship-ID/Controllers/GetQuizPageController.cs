@@ -10,20 +10,20 @@ namespace Eve_Ship_ID.Controllers
 {
     public class GetQuizPageController : Controller
     {
-        private const int QUIZCOUNT = 4;
+        private const int QUESTIONCOUNT = 4;
         //
         // GET: /GetQuizPage/
 
         public ActionResult Index()
         {
-            var popData = getSingleQuiz(1);
+            var popData = getSingleQuestion(1);
             return View(popData);
         }
 
         [HttpPost]
         public ActionResult Index(string endValue)
         {
-            var popData = getSingleQuiz(1);
+            var popData = getSingleQuestion(1);
             popData.score = endValue;
             return View(popData);
         }
@@ -44,10 +44,10 @@ namespace Eve_Ship_ID.Controllers
 
 
 
-        private ShipQuiz getSingleQuiz(int quizLevel)
+        private ShipQuiz getSingleQuestion(int quizLevel)
         {
             var rand = new Random();
-            var maxIdx = QUIZCOUNT-1;
+            var maxIdx = QUESTIONCOUNT-1;
             var correctItem = rand.Next(0, maxIdx);
 
             var shipName = eve_api.eve_api.GetRandomShip(1, quizLevel)[0];
