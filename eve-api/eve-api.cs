@@ -15,6 +15,18 @@ namespace eve_api
             return GetShipFullInfo(shipName).ShipType;
         }
 
+        public static int GetShipId(string shipName)
+        {
+
+            return GetShipFullInfo(shipName).typeID;
+        }
+
+        public static string GetShipDescription(string shipName)
+        {
+
+            return GetShipFullInfo(shipName).description;
+        }
+
         public static List<String> GetRandomShip(int nbrShips, int quizLevel)
         {
             return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel);

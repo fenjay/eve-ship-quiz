@@ -49,8 +49,20 @@
             else {
                 HandleWrongAnswer();
             }
-            $("#completionstatus").text('nextquestion');
+            $("#completionstatus").text('nextquestion'); // move me out
         });
+
+        shipId = $.get("/GetQuizPage/GetShipId", { id: question })
+        .done(function (data) {
+            $("#shipimg").attr("src", "images/Renders/" + data + ".png");
+        });
+
+        shipDesc = $.get("/GetQuizPage/GetShipDescription", { id: question })
+        .done(function (data) {
+            $("#shipdescp").text(data);
+        });
+
+
 
     }
 
@@ -140,7 +152,8 @@ else
 </div><!--divider-->
 
 <div id="shipdescription" style="float:right">
-This is a description
+<label id="shipdescp"/></label>
+<img id="shipimg"/>
 </div>
 
 </div>

@@ -42,6 +42,34 @@ namespace Eve_Ship_ID.Controllers
             }
         }
 
+        public string GetShipId(string id)
+        {
+            //id is shipname. return value is shipId
+            try
+            {
+                var shipTypeId = eve_api.eve_api.GetShipId(id);
+                return shipTypeId.ToString();
+            }
+            catch (Exception)
+            {
+                return "Error: Ship Not Found";
+            }
+        }
+
+        public string GetShipDescription(string id)
+        {
+            //id is shipname. return value is shipId
+            try
+            {
+                var shipTypeId = eve_api.eve_api.GetShipDescription(id);
+                return shipTypeId;
+            }
+            catch (Exception)
+            {
+                return "Error: Ship Not Found";
+            }
+        }
+
 
 
         private ShipQuiz getSingleQuestion(int quizLevel)
