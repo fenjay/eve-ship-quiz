@@ -132,12 +132,16 @@ publish/
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
 packages/
 
+## -------------  additions --------------------
 #jquery and knockout
 Scripts/jquery*
 Scripts/knockout*
 
 #asp.net mvc themes
 Content/themes/base/images
+
+#Eve Renders folder
+images/Renders/*
 
 # Windows Azure Build Output
 csx
