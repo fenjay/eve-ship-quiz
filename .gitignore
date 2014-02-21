@@ -134,14 +134,14 @@ packages/
 
 ## -------------  additions --------------------
 #jquery and knockout
-Scripts/jquery*
-Scripts/knockout*
+/Scripts/jquery*
+/Scripts/knockout*
 
 #asp.net mvc themes
-Content/themes/base/images
+/Content/themes/base/images
 
 #Eve Renders folder
-images/Renders/*
+/images/Renders/*
 
 # Windows Azure Build Output
 csx
