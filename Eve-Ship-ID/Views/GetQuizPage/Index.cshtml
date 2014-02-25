@@ -112,12 +112,10 @@
 else if (@Model.score.Length < 20)
 {
    <p class="scoreheader"><b>Current Score:</b><br />@Model.ParseScore()</p>
-   <br /><a href="/GetQuizPage">Start Over</a>
 }
 else
 {
     <h2>Final Score:</h2>@Model.ParseScore()
-   <br /><a href="/GetQuizPage">Start Over</a>
 }
 
 <div id="innerquiz" class="innerquiz">
@@ -149,7 +147,7 @@ else
 
 <!--div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div-->
 
-<div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Question</div>
+<div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Ship</div>
 
 </div><!--divider-->
 
@@ -162,6 +160,8 @@ else
 </div>
 
 </div>
+
+  <br /><a href="/GetQuizPage">Start Over</a>
 
 <div id="quizresults" class="quizresults">
 
