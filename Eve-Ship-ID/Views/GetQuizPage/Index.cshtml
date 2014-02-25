@@ -1,7 +1,7 @@
 ﻿@model Eve_Ship_ID.Models.ShipQuiz
 
 @{
-    ViewBag.Title = "Ship Identification Quiz";
+    ViewBag.Title = "EVE Online Ship Identification Quiz";
 }
 <script>
     function HandleCompletion() {
@@ -54,6 +54,8 @@
 
         shipId = $.get("/GetQuizPage/GetShipId", { id: question })
         .done(function (data) {
+            $("#shipimg").css("width", "256px");
+            $("#shipimg").css("height", "256px");
             $("#shipimg").attr("src", "images/Renders/" + data + ".png");
         });
 
@@ -119,10 +121,10 @@ else
 }
 
 <div id="innerquiz" class="innerquiz">
+<div id="divider" class="divider">
+
 <div class="quizheader">@Model.ShipName</div>
 <br />
-
-<div id="divider" style="width:75%">
 
 <form id="quizform" style="display:none">
 @foreach (var name in @Model.ShipTypeOptions)
@@ -151,9 +153,10 @@ else
 
 </div><!--divider-->
 
-<div id="shipdescription" style="float:right">
+<div id="shipdescription" class="shipdescription">
 <label id="shipdescp"/></label>
-<img id="shipimg"/>
+<br />
+<img id="shipimg" />
 </div>
 
 </div>

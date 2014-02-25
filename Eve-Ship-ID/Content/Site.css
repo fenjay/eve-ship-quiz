@@ -9,6 +9,10 @@ header, footer, nav, section {
     display: block;
 }
 
+img
+{
+    border-style:hidden;
+}
 
 /* Styles for basic forms
 -----------------------------------------------------------*/
@@ -116,8 +120,21 @@ div
 .innerquiz
 {
     width:1024px;
+    overflow:hidden;
     display: table;
     text-align:center;
+}
+
+.divider
+{
+    width:550px;
+    float:left;
+    padding:50px;
+}
+
+.shipdescription
+{
+    margin-left:650px;
 }
 
 .completion

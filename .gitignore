@@ -143,6 +143,9 @@ packages/
 #Eve Renders folder
 /images/Renders/*
 
+
+------------------------------------------------------
+
 # Windows Azure Build Output
 csx
 *.build.csdef
