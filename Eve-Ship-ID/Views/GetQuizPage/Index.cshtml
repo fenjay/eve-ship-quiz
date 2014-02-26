@@ -4,6 +4,8 @@
     ViewBag.Title = "EVE Online Ship Identification Quiz";
 }
 <script>
+
+
     function HandleCompletion() {
         /* 
         THIS FUNCTION MAY BE OBSOLETE
@@ -117,6 +119,7 @@ else
 {
     <h2>Final Score:</h2>@Model.ParseScore()
 }
+<a name="quizloc"></a>
 
 <div id="innerquiz" class="innerquiz">
 <div id="divider" class="divider">
@@ -177,5 +180,8 @@ else
 <input id="endValue" name="endValue" type="hidden" />
 <input id="nextpagesubmit" type="submit" value="Next Page"/>
 </form>
+
+Cookie:
+@Request.Cookies["eveshipid.score"].Value
 
 

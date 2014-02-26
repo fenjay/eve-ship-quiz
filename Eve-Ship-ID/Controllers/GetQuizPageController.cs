@@ -23,9 +23,13 @@ namespace Eve_Ship_ID.Controllers
         [HttpPost]
         public ActionResult Index(string endValue)
         {
+            var cookie = new HttpCookie("eveshipid.score", endValue);
+            Response.SetCookie(cookie);
+
             var popData = getSingleQuestion(1);
             popData.score = endValue;
             return View(popData);
+            
         }
 
         public string GetCorrectAnswer(string id)
