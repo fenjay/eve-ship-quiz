@@ -49,7 +49,7 @@
                 HandleRightAnswer();
             }
             else {
-                HandleWrongAnswer();
+                HandleWrongAnswer(data);
             }
             $("#completionstatus").text('nextquestion'); // move me out
         });
@@ -77,10 +77,18 @@
         $("#endValue").val(score + "1");
     }
 
-    function HandleWrongAnswer() {
+    function HandleWrongAnswer(rightAnswer) {
         score = $("#startValue").val();
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "red");
+
+        var j = 0;
+        $('input:radio').each(function () {
+            j++;
+            if ($(this).val() == rightAnswer) {
+                $("#answer" + j).css("background-color", "green");
+            }
+        });
         $("#endValue").val(score + "0");
     }
 
@@ -89,7 +97,6 @@
         var elements = document.getElementsByName('typeOption');
         elements[i].checked = true;
         HandleCompletion();
-        //$(bar).css("background-color", "green");
     }
 
     function TurnBlue(i) {
@@ -111,14 +118,7 @@
 {
    <h2>Start Quiz</h2>
 }
-else if (@Model.score.Length < 20)
-{
-   <p class="scoreheader"><b>Current Score:</b><br />@Model.ParseScore()</p>
-}
-else
-{
-    <h2>Final Score:</h2>@Model.ParseScore()
-}
+
 <a name="quizloc"></a>
 
 <div id="innerquiz" class="innerquiz">
@@ -166,12 +166,20 @@ else
 
   <br /><a href="/GetQuizPage">Start Over</a>
 
+@if (@Model.score.Length < 20)
+{
+   <p class="scoreheader"><b>Current Score:</b><br />@Model.ParseScore()</p>
+}
+else
+{
+
 <div id="quizresults" class="quizresults">
 
   <h2>Final Score:</h2>@Model.ParseScore()
    <br /><a href="/GetQuizPage">Start Over</a>
 
 </div>
+}
 
 <label id="completionstatus" style="visibility:hidden">initial</label>
 
@@ -182,6 +190,6 @@ else
 </form>
 
 Cookie:
-@Request.Cookies["eveshipid.score"].Value
+<!--Request.Cookies["eveshipid.score"].Value-->
 
 
