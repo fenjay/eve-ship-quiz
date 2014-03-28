@@ -69,6 +69,38 @@ div
     padding:15px;
 }
 
+.siteheader
+{
+    background-color:#202020;
+    width:1045px;
+    border-color:#555555;
+    border-style:solid;
+  
+}
+
+.maincontent
+{
+    margin-left:65px;
+    height:600px;
+    width:980px;
+    background-color:#202020;
+    border-color:#444444;
+    border-style:solid;
+    border-top-style:hidden;
+    
+}
+
+.contactfooter
+{
+    margin-left:65px;
+    width:980px;
+    background-color:#202020;
+    border-color:#444444;
+    border-style:solid;
+    border-top-style:hidden;
+    
+}
+
 .correctanswer 
 {
     background-color:Green;

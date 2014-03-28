@@ -164,7 +164,7 @@
 
 </div>
 
-  <br /><a href="/GetQuizPage">Start Over</a>
+  <br /><a href="/GetQuizPage?resetquiz=1">Start Over</a>
 
 @if (@Model.score.Length < 20)
 {
@@ -176,7 +176,7 @@ else
 <div id="quizresults" class="quizresults">
 
   <h2>Final Score:</h2>@Model.ParseScore()
-   <br /><a href="/GetQuizPage">Start Over</a>
+   <br /><a href="/GetQuizPage?resetquiz=1">Start Over</a>
 
 </div>
 }
@@ -188,8 +188,5 @@ else
 <input id="endValue" name="endValue" type="hidden" />
 <input id="nextpagesubmit" type="submit" value="Next Page"/>
 </form>
-
-Cookie:
-<!--Request.Cookies["eveshipid.score"].Value-->
 
 

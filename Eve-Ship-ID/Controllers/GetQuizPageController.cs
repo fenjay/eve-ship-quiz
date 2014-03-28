@@ -17,6 +17,20 @@ namespace Eve_Ship_ID.Controllers
         public ActionResult Index()
         {
             var popData = getSingleQuestion(1);
+
+            //Request.ServerVariables["HTTP_REFERER"]
+            if (this.HttpContext.Request.QueryString["resetquiz"] == "1")
+            {
+                Request.Cookies.Remove("eveshipid.score");
+            }
+
+            var cookie = Request.Cookies["eveshipid.score"];
+            var score = cookie == null ? string.Empty : cookie.Value;
+            if (score != String.Empty)
+            {
+                popData.score = score;
+            }
+
             return View(popData);
         }
 
@@ -24,7 +38,7 @@ namespace Eve_Ship_ID.Controllers
         public ActionResult Index(string endValue)
         {
             var cookie = new HttpCookie("eveshipid.score", endValue);
-            Response.SetCookie(cookie);
+            Response.Cookies.Add(cookie);
 
             var popData = getSingleQuestion(1);
             popData.score = endValue;

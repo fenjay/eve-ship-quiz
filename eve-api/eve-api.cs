@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace eve_api
 {
@@ -43,8 +44,10 @@ namespace eve_api
             //{
             //    shipName.Replace("'", "''");
             //}
-            
-            var sqlConn = new SqlConnection("Server=localhost;Database=CCP_Data;User Id=APIGetterUser;Password=password1;");
+
+            var settingsReader= new AppSettingsReader();
+            var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
+            var sqlConn = new SqlConnection(sqlConnString);
             var sqlCmd = new SqlCommand();
             try
             {

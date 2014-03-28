@@ -13,10 +13,10 @@ namespace Eve_Ship_ID.Controllers
         //
         // GET: /Main/
 
-        public string Index(string name)
+        public ViewResult Index(string name)
         {
-            return "Hello World" + name;
-            //return View();
+            //return "Hello World" + name;
+            return View();
 
         }
 
@@ -27,18 +27,18 @@ namespace Eve_Ship_ID.Controllers
             return message;
         }
 
-        public ActionResult ShipInfo(string id)
-        {
-            var shipType = eve_api.eve_api.GetShipType(id);
-            var ship = new Ship { Name = id, Type = shipType };
-            return View(ship);
-        }
+        //public ActionResult ShipInfo(string id)
+        //{
+        //    var shipType = eve_api.eve_api.GetShipType(id);
+        //    var ship = new Ship { Name = id, Type = shipType };
+        //    return View(ship);
+        //}
 
-        [HttpPost]
-        public ActionResult ShipInfo(Ship s)
-        {
-            return ShipInfo(s.Name);
-        }
+        //[HttpPost]
+        //public ActionResult ShipInfo(Ship s)
+        //{
+        //    return ShipInfo(s.Name);
+        //}
 
         //moved to its own controller
         //public ActionResult GetQuizPage()
