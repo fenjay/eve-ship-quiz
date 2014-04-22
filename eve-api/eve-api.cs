@@ -45,9 +45,7 @@ namespace eve_api
             //    shipName.Replace("'", "''");
             //}
 
-            var settingsReader= new AppSettingsReader();
-            var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
-            var sqlConn = new SqlConnection(sqlConnString);
+            var sqlConn = new SqlConnection(GetConnectionString());
             var sqlCmd = new SqlCommand();
             try
             {
@@ -82,11 +80,18 @@ namespace eve_api
 
         }
 
+        private static string GetConnectionString()
+        {
+            var settingsReader = new AppSettingsReader();
+            var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
+            return sqlConnString;
+        }
+
         private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, int quizLevel)
         {
             var ship = new List<String>();
 
-            var sqlConn = new SqlConnection("Server=localhost;Database=CCP_Data;User Id=APIGetterUser;Password=password1;");
+            var sqlConn = new SqlConnection(GetConnectionString());
             var sqlCmd = new SqlCommand();
             try
             {

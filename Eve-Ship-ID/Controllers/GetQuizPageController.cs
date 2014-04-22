@@ -16,6 +16,8 @@ namespace Eve_Ship_ID.Controllers
 
         public ActionResult Index()
         {
+            var settingsReader = new System.Configuration.AppSettingsReader();
+            var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
             var popData = getSingleQuestion(1);
 
             //Request.ServerVariables["HTTP_REFERER"]

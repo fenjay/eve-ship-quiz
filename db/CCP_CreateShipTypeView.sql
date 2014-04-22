@@ -3,16 +3,31 @@ IF  EXISTS (SELECT * FROM sys.tables WHERE object_id = OBJECT_ID(N'[dbo].[ShipTy
 DROP TABLE [dbo].ShipTypesView
 GO
 
+--create table
+create table dbo.ShipTypesView
+(
+TypeID integer,
+ShipName varchar(100),
+ShipType varchar(100),
+[description] nvarchar(3000),
+difficulty integer
+);
+go
 
---create table dbo.ShipTypesView
---(
---typeID integer,
---ShipName varchar(50),
---ShipType varchar(50),
---description varchar(200),
---difficulty integer
---);
---GO
+--upload data from local to server
+insert [fenjaylabs.com].CCP_Data.dbo.ShipTypesView
+([typeID],[ShipName],[ShipType],[description],[difficulty])
+SELECT [typeID]
+      ,[ShipName]
+      ,[ShipType]
+      ,[description]
+      ,[difficulty]
+  FROM CCP_Data.[dbo].[ShipTypesView]
+
+
+
+
+--locally
 
 
 select typeID, typeName as ShipName, groupName as ShipType, t.description, 1 as difficulty
