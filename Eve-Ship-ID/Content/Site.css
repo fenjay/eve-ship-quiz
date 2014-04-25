@@ -78,6 +78,16 @@ div
   
 }
 
+.quizpageheader
+{
+    background-color:#202020;
+    width:1050px;
+    height:40px;
+    border-color:#555555;
+    border-style:solid;
+  
+}
+
 .maincontent
 {
     margin-left:65px;
@@ -155,6 +165,7 @@ div
     overflow:hidden;
     display: table;
     text-align:center;
+    margin-left:65px;
 }
 
 .divider
@@ -166,6 +177,8 @@ div
 
 .shipdescription
 {
+    display:none;
+    background-color:#002200;
     margin-left:650px;
 }
 
@@ -208,8 +221,9 @@ p
 
 .scoreheader
 {
-    font-size:x-large;
+    font-size:large;
     font-family:Arial;
+    vertical-align:bottom;
    
 }
 

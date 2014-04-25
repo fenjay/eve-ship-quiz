@@ -42,7 +42,7 @@
         question = "@Model.ShipName";
         answer = $("input[type='radio'][name='typeOption']:checked").val();
 
-        correctanswer = $.get("/GetQuizPage/GetCorrectAnswer", { id: question })
+        correctanswer = $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
         //.done(function (data) { alert(data); });
         .done(function (data) {
             if (data == answer) {
@@ -54,16 +54,17 @@
             $("#completionstatus").text('nextquestion'); // move me out
         });
 
-        shipId = $.get("/GetQuizPage/GetShipId", { id: question })
+        shipId = $.get("/EveShipIDQuiz/GetShipId", { id: question })
         .done(function (data) {
             $("#shipimg").css("width", "256px");
             $("#shipimg").css("height", "256px");
             $("#shipimg").attr("src", "images/Renders/" + data + ".png");
         });
 
-        shipDesc = $.get("/GetQuizPage/GetShipDescription", { id: question })
+        shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
         .done(function (data) {
             $("#shipdescp").text(data);
+            $("#shipdescription").css("display", "inherit");
         });
 
 
@@ -114,12 +115,36 @@
     }
 
 </script>
-@if (@Model.score.Length == 0)
-{
-   <h2>Start Quiz</h2>
-}
 
 <a name="quizloc"></a>
+
+@if (@Model.score.Length == 0)
+{
+     <div style="width:40%;float:left">
+   <p style="vertical-align:bottom">New Quiz</p>
+   </div>   
+}
+
+@if (@Model.score.Length > 0 && @Model.score.Length < 20)
+{
+    <div style="width:40%;float:left">
+   <p class="scoreheader"><b>Current Score:</b>&nbsp;@Model.ParseScore()</p>
+</div>
+}
+
+else
+{
+    
+<div id="quizresults" class="quizresults">
+
+  <h2>Final Score:</h2>@Model.ParseScore()
+   <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
+
+</div>
+}
+<div style="width:40%;float:right">
+<a style="vertical-align:bottom" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
+</div>
 
 <div id="innerquiz" class="innerquiz">
 <div id="divider" class="divider">
@@ -144,12 +169,6 @@
 <br />
 
 
-<div class="correctanswer" id="rightanswerdiv" style="display:none">Correct</div>
-<div class="wronganswer" id="wronganswerdiv" style="display:none">Incorrect</div>
-
-
-<!--div class="nextButton" id="nextQuestionDiv" style="display:none" onclick="nextQuestionForm.submit();">Next Page</div-->
-
 <div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Ship</div>
 
 </div><!--divider-->
@@ -164,26 +183,10 @@
 
 </div>
 
-  <br /><a href="/GetQuizPage?resetquiz=1">Start Over</a>
-
-@if (@Model.score.Length < 20)
-{
-   <p class="scoreheader"><b>Current Score:</b><br />@Model.ParseScore()</p>
-}
-else
-{
-
-<div id="quizresults" class="quizresults">
-
-  <h2>Final Score:</h2>@Model.ParseScore()
-   <br /><a href="/GetQuizPage?resetquiz=1">Start Over</a>
-
-</div>
-}
 
 <label id="completionstatus" style="visibility:hidden">initial</label>
 
-<form action="/GetQuizPage" method="post" id="nextQuestionForm" style="visibility:hidden">
+<form action="/EveShipIDQuiz" method="post" id="nextQuestionForm" style="visibility:hidden">
 <input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
 <input id="endValue" name="endValue" type="hidden" />
 <input id="nextpagesubmit" type="submit" value="Next Page"/>

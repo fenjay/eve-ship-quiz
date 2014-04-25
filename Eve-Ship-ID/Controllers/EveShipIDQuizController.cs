@@ -8,11 +8,11 @@ using eve_api;
 
 namespace Eve_Ship_ID.Controllers
 {
-    public class GetQuizPageController : Controller
+    public class EveShipIDQuizController : Controller
     {
         private const int QUESTIONCOUNT = 4;
         //
-        // GET: /GetQuizPage/
+        // GET: /EveShipIDQuiz/
 
         public ActionResult Index()
         {
