@@ -8,7 +8,6 @@
 
     function HandleCompletion() {
         /* 
-        THIS FUNCTION MAY BE OBSOLETE
         elimiated and use HandleAnswer() or NextQuestion()
         was only needed when same button accepted answer or hit next question
         idea: on last question, submit = results page
@@ -31,6 +30,8 @@
             else {
                 $("#innerquiz").css("display", "none");
                 $("#quizresults").css("display", "inline-block");
+                $("#currentscore").css("display", "none");
+                $("#startoverlink").css("display", "none");
             }
         }
        
@@ -43,8 +44,8 @@
         answer = $("input[type='radio'][name='typeOption']:checked").val();
 
         correctanswer = $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
-        //.done(function (data) { alert(data); });
         .done(function (data) {
+            $("#shipdescp").append(data);
             if (data == answer) {
                 HandleRightAnswer();
             }
@@ -63,7 +64,8 @@
 
         shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
         .done(function (data) {
-            $("#shipdescp").text(data);
+            $("#shipdescp").append("<br/><br/>");
+            $("#shipdescp").append(data);
             $("#shipdescription").css("display", "inherit");
         });
 
@@ -82,6 +84,7 @@
         score = $("#startValue").val();
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "red");
+        $("#shipdescription").css("background-color", "#330000");
 
         var j = 0;
         $('input:radio').each(function () {
@@ -125,15 +128,10 @@
    </div>   
 }
 
-@if (@Model.score.Length > 0 && @Model.score.Length < 20)
-{
-    <div style="width:40%;float:left">
+    <div id="currentscore" style="width:40%;float:left">
    <p class="scoreheader"><b>Current Score:</b>&nbsp;@Model.ParseScore()</p>
 </div>
-}
 
-else
-{
     
 <div id="quizresults" class="quizresults">
 
@@ -141,8 +139,8 @@ else
    <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
 
 </div>
-}
-<div style="width:40%;float:right">
+
+<div id="startoverlink" style="width:40%;float:right">
 <a style="vertical-align:bottom" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
 </div>
 

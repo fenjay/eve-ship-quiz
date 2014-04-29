@@ -58,7 +58,37 @@ where typeID in (615,617,635,2078,2834,2836,2863,3514,3516,3518,3532,11011,11940
 --difficulty 2: pirate/rare
 
 
+--------------------REMOVE <font etc TAGS FROM DATA--------------------------
+  select [typeID],
+  [description], 
+  RIGHT([description],LEN([description])-41) as [updateddesc] 
+  into #shiptypestemp 
+  FROM [CCP_Data].[dbo].[ShipTypesView]
+  where [description] like '<font%'
+  
+  insert into #shiptypestemp
+  ( [typeID],  [description],[updateddesc] )
+  select [typeID],[description],  RIGHT([description],LEN([description])-45) FROM [CCP_Data].[dbo].[ShipTypesView]
+  where [description] like '<br><font%'
+  
+    
+  --select * from #shiptypestemp
+  
+  update
+  [CCP_Data].[dbo].[ShipTypesView]
+  set
+  [description] = [updateddesc]
+  from
+  [CCP_Data].[dbo].[ShipTypesView] s
+  inner join
+  #shiptypestemp t
+  on s.typeID = t.typeID
+    
+  drop table #shiptypestemp
 
+  ----------------------------------------------
+
+  
 select typeID, ShipName, difficulty from ShipTypesView 
 
 /*

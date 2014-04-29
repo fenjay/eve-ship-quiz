@@ -9,6 +9,17 @@ header, footer, nav, section {
     display: block;
 }
 
+a
+{
+    color:#FFFFFF;
+}
+
+a:visited
+{
+    color:#666666;
+}
+
+
 img
 {
     border-style:hidden;
