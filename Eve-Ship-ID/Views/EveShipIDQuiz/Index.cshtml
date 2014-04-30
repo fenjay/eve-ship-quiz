@@ -46,6 +46,15 @@
         correctanswer = $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
         .done(function (data) {
             $("#shipdescp").append(data);
+            
+            shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
+        .done(function (data) {
+            $("#shipdescp").append("<br/><br/>");
+            $("#shipdescp").append(data);
+            $("#shipdescription").css("display", "inherit");
+        }); //subquery for ShipDesc. Must append in order or title can end up on bottom due to response time
+            
+            
             if (data == answer) {
                 HandleRightAnswer();
             }
@@ -53,7 +62,7 @@
                 HandleWrongAnswer(data);
             }
             $("#completionstatus").text('nextquestion'); // move me out
-        });
+        }); //end correct answer query
 
         shipId = $.get("/EveShipIDQuiz/GetShipId", { id: question })
         .done(function (data) {
@@ -62,21 +71,13 @@
             $("#shipimg").attr("src", "images/Renders/" + data + ".png");
         });
 
-        shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
-        .done(function (data) {
-            $("#shipdescp").append("<br/><br/>");
-            $("#shipdescp").append(data);
-            $("#shipdescription").css("display", "inherit");
-        });
-
-
-
     }
 
     function HandleRightAnswer() {
         score = $("#startValue").val();
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "green");
+        $("#shipdescription").css("background-color", "#002200");
         $("#endValue").val(score + "1");
     }
 
@@ -127,11 +128,12 @@
    <p style="vertical-align:bottom">New Quiz</p>
    </div>   
 }
-
+else
+{
     <div id="currentscore" style="width:40%;float:left">
    <p class="scoreheader"><b>Current Score:</b>&nbsp;@Model.ParseScore()</p>
 </div>
-
+}
     
 <div id="quizresults" class="quizresults">
 

@@ -177,6 +177,7 @@ div
     display: table;
     text-align:center;
     margin-left:65px;
+    clear:both;
 }
 
 .divider
@@ -189,7 +190,6 @@ div
 .shipdescription
 {
     display:none;
-    background-color:#002200;
     margin-left:650px;
 }
 

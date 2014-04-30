@@ -15,6 +15,8 @@ namespace Eve_Ship_ID.Models
         public string ShipName { get; set;}
         public List<String> ShipTypeOptions { get; set; }
         public string score { get; set; }
+        public int  nbrCorrect { get; private set; }
+        public int nbrIncorrect { get; private set; }
 
         public string ParseScore()
         {
@@ -25,6 +27,10 @@ namespace Eve_Ship_ID.Models
                 if (c == '1') correct++;
                 if (c == '0') incorrect++;
             }
+            
+            nbrCorrect = correct;
+            nbrIncorrect = incorrect;
+
             return "Correct: " + correct.ToString() + " | Incorrect: " + incorrect.ToString();
         }
 
