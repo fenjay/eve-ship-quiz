@@ -20,11 +20,14 @@ namespace Eve_Ship_ID.Controllers
             var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
             var popData = getSingleQuestion(1);
 
+
             //Request.ServerVariables["HTTP_REFERER"]
             if (this.HttpContext.Request.QueryString["resetquiz"] == "1")
             {
                 Request.Cookies.Remove("eveshipid.score");
             }
+
+            //delete old cookies since score has changed?
 
             var cookie = Request.Cookies["eveshipid.score"];
             var score = cookie == null ? string.Empty : cookie.Value;

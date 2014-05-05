@@ -6,25 +6,28 @@
 <script>
 
 
-    function HandleCompletion() {
+    function NextQuestion() {
         /* 
-        elimiated and use HandleAnswer() or NextQuestion()
+        elimiate and use HandleAnswer() or NextQuestion()
         was only needed when same button accepted answer or hit next question
         idea: on last question, submit = results page
 
         if initial, then run HandleAnswer  
         if done, submit NextQuestionForm
        
-        */
-        if ($("#completionstatus").text() == "initial") {
-            //$("#completiondiv").css("background-color", "blue");
-            HandleAnswer();
-        }
+//        */
+//        if ($("#completionstatus").text() == "initial") {
+//            //$("#completiondiv").css("background-color", "blue");
+//            HandleAnswer();
+//        }
 
         score = $("#endValue").val();
+        var scoreArray = score.split(";");
+        nbrAnswered = (scoreArray.length-1) / 2;  //trailing ; makes a blank entry so subtract one
+        //alert(nbrAnswered);
 
         if (($("#completionstatus").text() == "nextquestion")) {
-            if (score.length < 20) {
+            if (nbrAnswered < 20) {
                 nextQuestionForm.submit();
             }
             else {
@@ -39,49 +42,53 @@
 
 
     function HandleAnswer() {
-        $("#mainformSubmit").css("display","none");
+        $("#mainformSubmit").css("display", "none");  //no such control?
+
         question = "@Model.ShipName";
+
         answer = $("input[type='radio'][name='typeOption']:checked").val();
 
-        correctanswer = $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
-        .done(function (data) {
-            $("#shipdescp").append(data);
-            
+        $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
+        .done(function (correctanswer) {
+            $("#shipdescp").append(correctanswer);
             shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
-        .done(function (data) {
-            $("#shipdescp").append("<br/><br/>");
-            $("#shipdescp").append(data);
-            $("#shipdescription").css("display", "inherit");
-        }); //subquery for ShipDesc. Must append in order or title can end up on bottom due to response time
-            
-            
-            if (data == answer) {
-                HandleRightAnswer();
-            }
-            else {
-                HandleWrongAnswer(data);
-            }
+            .done(function (descr) {
+                $("#shipdescp").append("<br/><br/>");
+                $("#shipdescp").append(descr);
+                $("#shipdescription").css("display", "inherit");
+            }); //subquery for ShipDesc. Must append in order or title can end up on bottom due to response time
+
+            shipId = $.get("/EveShipIDQuiz/GetShipId", { id: question })
+            .done(function (shipid) {
+                $("#shipimg").css("width", "256px");
+                $("#shipimg").css("height", "256px");
+                $("#shipimg").attr("src", "images/Renders/" + shipid + ".png");
+
+                if (answer == correctanswer) {
+                    HandleRightAnswer(shipid);
+                }
+                else {
+                    HandleWrongAnswer(shipid, correctanswer);
+                }
+
+            });  //subquery for shipID. use it both to set correct/incorrect status and to populate the image.
+
             $("#completionstatus").text('nextquestion'); // move me out
         }); //end correct answer query
 
-        shipId = $.get("/EveShipIDQuiz/GetShipId", { id: question })
-        .done(function (data) {
-            $("#shipimg").css("width", "256px");
-            $("#shipimg").css("height", "256px");
-            $("#shipimg").attr("src", "images/Renders/" + data + ".png");
-        });
+        
 
     }
 
-    function HandleRightAnswer() {
+    function HandleRightAnswer(shipId) {
         score = $("#startValue").val();
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "green");
         $("#shipdescription").css("background-color", "#002200");
-        $("#endValue").val(score + "1");
+        $("#endValue").val(score + shipId + ";1;");
     }
 
-    function HandleWrongAnswer(rightAnswer) {
+    function HandleWrongAnswer(shipId, rightAnswer) {
         score = $("#startValue").val();
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "red");
@@ -94,14 +101,14 @@
                 $("#answer" + j).css("background-color", "green");
             }
         });
-        $("#endValue").val(score + "0");
+        $("#endValue").val(score + shipId + ";0;");
     }
 
     function CheckAnswer(i,bar)
     {
         var elements = document.getElementsByName('typeOption');
         elements[i].checked = true;
-        HandleCompletion();
+        HandleAnswer();
     }
 
     function TurnBlue(i) {
@@ -169,7 +176,7 @@ else
 <br />
 
 
-<div id="completiondiv" class="completion" onclick="HandleCompletion();">Next Ship</div>
+<div id="completiondiv" class="completion" onclick="NextQuestion();">Next Ship</div>
 
 </div><!--divider-->
 
