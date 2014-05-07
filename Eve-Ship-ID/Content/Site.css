@@ -19,6 +19,12 @@ a:visited
     color:#666666;
 }
 
+.headeranchor
+{
+    font-size:large;
+    font-family:Arial;
+    vertical-align:bottom;
+}
 
 img
 {
@@ -80,23 +86,28 @@ div
     padding:15px;
 }
 
+
+.quizpageheader
+{
+    width:40%;
+    float:left;
+    height:40px;
+}
+
 .siteheader
 {
     background-color:#202020;
     width:1045px;
     border-color:#555555;
     border-style:solid;
-  
 }
 
-.quizpageheader
+
+.rightheader
 {
-    background-color:#202020;
-    width:1050px;
+    width:40%;
+    float:left;
     height:40px;
-    border-color:#555555;
-    border-style:solid;
-  
 }
 
 .maincontent
@@ -165,19 +176,20 @@ div
     font-size:x-large;
     background-color:#000099;
     color:White;
-    width:120px;
+    width:auto;
+    min-width:120px;
     display:inline-block;
 }
 
 
 .innerquiz
 {
-    width:1024px;
+    width:450px;
     overflow:hidden;
     display: table;
     text-align:center;
     margin-left:65px;
-    clear:both;
+    float:left;
 }
 
 .divider
@@ -189,8 +201,23 @@ div
 
 .shipdescription
 {
+    overflow:visible;
+    width:500px;
+    min-height:320px;
+    height:auto;
     display:none;
-    margin-left:650px;
+    float:left;
+}
+
+.qmarkdiv
+{
+    float:left;
+    display:table;
+    background-color:#222222;
+    opacity:0.5;
+    width:500px;
+    height:420px;
+    border-style:dotted;
 }
 
 .completion
@@ -207,7 +234,7 @@ div
 
 .answerbar
 {
-    width:480px;
+    width:350px;
     height:20px;
     background-color:#3399FF;
     vertical-align:middle;
@@ -230,11 +257,10 @@ p
     font-size:medium;
 }
 
-.scoreheader
+.headertext
 {
     font-size:large;
     font-family:Arial;
-    vertical-align:bottom;
    
 }
 

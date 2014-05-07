@@ -31,6 +31,7 @@
                 nextQuestionForm.submit();
             }
             else {
+                $("#shipdescription").css("display", "none");
                 $("#innerquiz").css("display", "none");
                 $("#quizresults").css("display", "inline-block");
                 $("#currentscore").css("display", "none");
@@ -44,6 +45,10 @@
     function HandleAnswer() {
         $("#mainformSubmit").css("display", "none");  //no such control?
 
+        //$("#qmarkspan").css("display", "none");
+        $("#qmarkdiv").css("display", "none");
+        $("#shipdescription").css("display", "inline-block");
+
         question = "@Model.ShipName";
 
         answer = $("input[type='radio'][name='typeOption']:checked").val();
@@ -55,7 +60,7 @@
             .done(function (descr) {
                 $("#shipdescp").append("<br/><br/>");
                 $("#shipdescp").append(descr);
-                $("#shipdescription").css("display", "inherit");
+                //$("#shipdescription").css("display", "inherit");
             }); //subquery for ShipDesc. Must append in order or title can end up on bottom due to response time
 
             shipId = $.get("/EveShipIDQuiz/GetShipId", { id: question })
@@ -74,7 +79,7 @@
             });  //subquery for shipID. use it both to set correct/incorrect status and to populate the image.
 
             $("#completionstatus").text('nextquestion'); // move me out
-        }); //end correct answer query
+        });   //end correct answer query
 
         
 
@@ -129,19 +134,28 @@
 
 <a name="quizloc"></a>
 
+<div id="leftheader" class="quizpageheader">
+
+<p class="headertext">
 @if (@Model.score.Length == 0)
 {
-     <div style="width:40%;float:left">
-   <p style="vertical-align:bottom">New Quiz</p>
-   </div>   
+   <b>New Quiz</b>
 }
 else
 {
-    <div id="currentscore" style="width:40%;float:left">
-   <p class="scoreheader"><b>Current Score:</b>&nbsp;@Model.ParseScore()</p>
-</div>
+   <b>Current Score:</b> @Model.ParseScore()
 }
+<br />
+<a class="headeranchor" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
+</p>
+</div>    
     
+<div id="rightheader" class="quizpageheader">
+&nbsp;
+</div>
+
+<div id="spacer" style="width:100%;height:1px;clear:both" >&nbsp;</div>
+
 <div id="quizresults" class="quizresults">
 
   <h2>Final Score:</h2>@Model.ParseScore()
@@ -149,12 +163,8 @@ else
 
 </div>
 
-<div id="startoverlink" style="width:40%;float:right">
-<a style="vertical-align:bottom" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
-</div>
 
 <div id="innerquiz" class="innerquiz">
-<div id="divider" class="divider">
 
 <div class="quizheader">@Model.ShipName</div>
 <br />
@@ -178,14 +188,17 @@ else
 
 <div id="completiondiv" class="completion" onclick="NextQuestion();">Next Ship</div>
 
-</div><!--divider-->
+
+</div>
 
 <div id="shipdescription" class="shipdescription">
-<label id="shipdescp"/></label>
+<label id="shipdescp"/>
 <br />
 <img id="shipimg" />
 </div>
 
+<div id="qmarkdiv" class="qmarkdiv">
+<div id="qmarkspan" style="display:table-cell;margin-left:250px;vertical-align:middle;color:white;font-size:160px;text-align:center">?</div>
 </div>
 
 </div>
