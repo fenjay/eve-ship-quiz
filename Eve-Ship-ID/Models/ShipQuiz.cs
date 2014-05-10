@@ -15,14 +15,14 @@ namespace Eve_Ship_ID.Models
         public string ShipName { get; set;}
         public List<String> ShipTypeOptions { get; set; }
         public string score { get; set; }
-        public int  nbrCorrect { get; private set; }
-        public int nbrIncorrect { get; private set; }
+        //public int  nbrCorrect { get; private set; }
+        //public int nbrIncorrect { get; private set; }
+        private int nbrCorrect;
+        private int nbrIncorrect;
 
         public string ParseScore()
         {
-            var correct = 0;
-            var incorrect = 0;
-
+ 
             //foreach (char c in score)
             //{
             //    if (c == '1') correct++;
@@ -34,37 +34,61 @@ namespace Eve_Ship_ID.Models
                 return string.Empty;
             }
 
+            CalculateScore();
+
+            return "Correct: " + nbrCorrect.ToString() + " | Incorrect: " + nbrIncorrect.ToString();
+            //return string.Empty;
+        }
+
+        private void CalculateScore()
+        {
+            var correct = 0;
+            var incorrect = 0;
+
             var fullScore = score.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 
             if (fullScore.Length % 2 != 0)  //score should be even: one id and one correct/incorrect for each question.
             {
                 System.Diagnostics.Debug.Print("Score Error. score string is: " + score);
-                return "Score error.";
+                nbrCorrect = 0;
+                nbrIncorrect = 0;
+            }
+            else
+            {
+                for (var s = 0; s < fullScore.Length; s++)
+                {
+                    if ((s % 2 != 0) && (fullScore[s] == "1"))
+                    {
+                        correct++;
+                    }
+                    else
+                        if ((s % 2 != 0) && (fullScore[s] == "0"))
+                        {
+                            incorrect++;
+                        }
+                    //else  //add shipid to a hashtable or something
+                    //if (s % 2 != 0)
+                    //{
+
+                    //}
+
+                }
             }
 
-            for (var s=0;s<fullScore.Length;s++)
-            {
-                if ((s % 2 != 0) && (fullScore[s] == "1"))
-                {
-                    correct++;
-                }
-                else
-                if ((s % 2 != 0)&&(fullScore[s]=="0"))
-                {
-                    incorrect++;
-                }
-                //else  //add shipid to a hashtable or something
-                //if (s % 2 != 0)
-                //{
-                    
-                //}
-        }
-
-            
             nbrCorrect = correct;
             nbrIncorrect = incorrect;
+        }
 
-            return "Correct: " + nbrCorrect.ToString() + " | Incorrect: " + nbrIncorrect.ToString();
+        public int getNbrCorrect()
+        {
+            CalculateScore();
+            return nbrCorrect; 
+        }
+
+        public int getNbrIncorrect()
+        {
+            CalculateScore();
+            return nbrIncorrect;
         }
 
     }

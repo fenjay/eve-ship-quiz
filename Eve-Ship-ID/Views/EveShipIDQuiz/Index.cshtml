@@ -7,20 +7,7 @@
 
 
     function NextQuestion() {
-        /* 
-        elimiate and use HandleAnswer() or NextQuestion()
-        was only needed when same button accepted answer or hit next question
-        idea: on last question, submit = results page
-
-        if initial, then run HandleAnswer  
-        if done, submit NextQuestionForm
-       
-//        */
-//        if ($("#completionstatus").text() == "initial") {
-//            //$("#completiondiv").css("background-color", "blue");
-//            HandleAnswer();
-//        }
-
+        
         score = $("#endValue").val();
         var scoreArray = score.split(";");
         nbrAnswered = (scoreArray.length-1) / 2;  //trailing ; makes a blank entry so subtract one
@@ -33,9 +20,11 @@
             else {
                 $("#shipdescription").css("display", "none");
                 $("#innerquiz").css("display", "none");
-                $("#quizresults").css("display", "inline-block");
                 $("#currentscore").css("display", "none");
                 $("#startoverlink").css("display", "none");
+                $("#score").css("display", "none");
+                $("#quizresults").css("display", "inline-block");
+                
             }
         }
        
@@ -55,10 +44,12 @@
 
         $.get("/EveShipIDQuiz/GetCorrectAnswer", { id: question })
         .done(function (correctanswer) {
-            $("#shipdescp").append(correctanswer);
+            $("#correctshipname").prepend(correctanswer);
             shipDesc = $.get("/EveShipIDQuiz/GetShipDescription", { id: question })
             .done(function (descr) {
                 $("#shipdescp").append("<br/><br/>");
+                $("#shipdescp").css("font-weight", "normal");
+                $("#shipdescp").css("font-size", "small");
                 $("#shipdescp").append(descr);
                 //$("#shipdescription").css("display", "inherit");
             }); //subquery for ShipDesc. Must append in order or title can end up on bottom due to response time
@@ -87,6 +78,11 @@
 
     function HandleRightAnswer(shipId) {
         score = $("#startValue").val();
+        
+        var newNbrCorrect = parseInt($("#nbrcorrect").text(), 10) + 1;
+        $("#nbrcorrect").text(newNbrCorrect);
+        $("#finalnbrcorrect").text(newNbrCorrect);
+
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "green");
         $("#shipdescription").css("background-color", "#002200");
@@ -95,6 +91,11 @@
 
     function HandleWrongAnswer(shipId, rightAnswer) {
         score = $("#startValue").val();
+
+        var newNbrIncorrect = parseInt($("#nbrincorrect").text(), 10) + 1;
+        $("#nbrincorrect").text(newNbrIncorrect);
+        $("#finalnbrincorrect").text(newNbrIncorrect);
+
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "red");
         $("#shipdescription").css("background-color", "#330000");
@@ -136,14 +137,14 @@
 
 <div id="leftheader" class="quizpageheader">
 
-<p class="headertext">
+<p id="score" class="headertext">
 @if (@Model.score.Length == 0)
 {
    <b>New Quiz</b>
 }
 else
 {
-   <b>Current Score:</b> @Model.ParseScore()
+       <b>Correct: <span id="nbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="nbrincorrect">@Model.getNbrIncorrect()</span></b>
 }
 <br />
 <a class="headeranchor" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
@@ -158,8 +159,8 @@ else
 
 <div id="quizresults" class="quizresults">
 
-  <h2>Final Score:</h2>@Model.ParseScore()
-   <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
+  <h2>Final Score:</h2> <b>Correct: <span id="finalnbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="finalnbrincorrect">@Model.getNbrIncorrect()</span></b>
+   <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Another Round?</a>
 
 </div>
 
@@ -192,9 +193,12 @@ else
 </div>
 
 <div id="shipdescription" class="shipdescription">
-<label id="shipdescp"/>
+<span id="correctshipname" style="font-size:large;font-weight:bold;" >&nbsp;</span>
 <br />
-<img id="shipimg" />
+<br />
+<img id="shipimg" style="margin-left:125px;margin-right:auto;"/>
+<br />
+<span id="shipdescp" style="font-size:medium;text-align:left;">&nbsp;</span>
 </div>
 
 <div id="qmarkdiv" class="qmarkdiv">
