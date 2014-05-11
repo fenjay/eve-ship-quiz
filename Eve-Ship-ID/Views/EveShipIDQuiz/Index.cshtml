@@ -7,11 +7,12 @@
 
 
     function NextQuestion() {
-        
-        score = $("#endValue").val();
-        var scoreArray = score.split(";");
-        nbrAnswered = (scoreArray.length-1) / 2;  //trailing ; makes a blank entry so subtract one
-        //alert(nbrAnswered);
+//        
+//        score = $("#endValue").val();
+//        var scoreArray = score.split(";");
+//        nbrAnswered = (scoreArray.length-1) / 2;  //trailing ; makes a blank entry so subtract one
+//        //alert(nbrAnswered);
+        var nbrAnswered = GetNbrAnswered();
 
         if (($("#completionstatus").text() == "nextquestion")) {
             if (nbrAnswered < 20) {
@@ -67,13 +68,27 @@
                     HandleWrongAnswer(shipid, correctanswer);
                 }
 
+                var nbrAnswered = GetNbrAnswered();
+
+                if (nbrAnswered == 20) {
+                    $("#completiondiv").text("Complete Quiz");
+                }
+
+
             });  //subquery for shipID. use it both to set correct/incorrect status and to populate the image.
 
-            $("#completionstatus").text('nextquestion'); // move me out
-        });   //end correct answer query
 
-        
+        });       //end correct answer query
 
+        $("#completionstatus").text('nextquestion');
+
+    }
+
+    function GetNbrAnswered() {
+        var score = $("#endValue").val();
+        var scoreArray = score.split(";");
+        nbrAnswered = (scoreArray.length - 1) / 2;
+        return nbrAnswered;
     }
 
     function HandleRightAnswer(shipId) {
@@ -87,6 +102,7 @@
         $("#completiondiv").css("background-color", "green");
         $("#shipdescription").css("background-color", "#002200");
         $("#endValue").val(score + shipId + ";1;");
+
     }
 
     function HandleWrongAnswer(shipId, rightAnswer) {
@@ -110,11 +126,12 @@
         $("#endValue").val(score + shipId + ";0;");
     }
 
-    function CheckAnswer(i,bar)
-    {
-        var elements = document.getElementsByName('typeOption');
-        elements[i].checked = true;
-        HandleAnswer();
+    function CheckAnswer(i,bar) {
+         if (($("#completionstatus").text() != "nextquestion")) {
+            var elements = document.getElementsByName('typeOption');
+            elements[i].checked = true;
+            HandleAnswer();
+        }
     }
 
     function TurnBlue(i) {
