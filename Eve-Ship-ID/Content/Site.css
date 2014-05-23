@@ -1,7 +1,7 @@
 ﻿body {
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    color: #686868;
+    color: #989898;
     background-color: #404040;
 }
 
@@ -202,8 +202,8 @@ div
 .shipdescription
 {
     overflow:visible;
-    width:500px;
-    min-height:320px;
+    width:600px;
+    min-height:450px;
     height:auto;
     display:none;
     float:left;
@@ -215,8 +215,8 @@ div
     display:table;
     background-color:#222222;
     opacity:0.5;
-    width:500px;
-    height:420px;
+    width:600px;
+    height:450px;
     border-style:dotted;
 }
 

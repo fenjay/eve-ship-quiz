@@ -70,6 +70,11 @@
 
                 var nbrAnswered = GetNbrAnswered();
 
+                //----------------------------
+                var mystring = TallyScore();
+                //alert("mystring=" + mystring);
+                //------------------------------
+
                 if (nbrAnswered == 20) {
                     $("#completiondiv").text("Complete Quiz");
                 }
@@ -81,6 +86,7 @@
         });       //end correct answer query
 
         $("#completionstatus").text('nextquestion');
+      
 
     }
 
@@ -148,6 +154,30 @@
         }
     }
 
+    function TallyScore()
+    {
+        var scoreString = $("#endValue").val();
+        var bigArray = scoreString.split(";");
+        var correctArray = [];
+        var incorrectArray= [];
+
+        for (var i = 0; i < bigArray.length; i++) {
+            if (i % 2 == 0){
+                correctArray.push(bigArray[i]);
+            }
+        }
+
+        var returnedString = "";
+        for (var j = 0; j < correctArray.length; j++) {
+            returnedString += correctArray[j];
+            returnedString += ";";
+        }
+
+        return returnedString;
+    }
+
+
+
 </script>
 
 <a name="quizloc"></a>
@@ -213,13 +243,20 @@ else
 <span id="correctshipname" style="font-size:large;font-weight:bold;" >&nbsp;</span>
 <br />
 <br />
-<img id="shipimg" style="margin-left:125px;margin-right:auto;"/>
+<img id="shipimg" style="margin-left:175px;margin-right:auto;"/>
 <br />
 <span id="shipdescp" style="font-size:medium;text-align:left;">&nbsp;</span>
 </div>
 
 <div id="qmarkdiv" class="qmarkdiv">
 <div id="qmarkspan" style="display:table-cell;margin-left:250px;vertical-align:middle;color:white;font-size:160px;text-align:center">?</div>
+</div>
+<div id="finalscorediv" style="width:90%;float:left;border:dotted;display:none;">
+<table style="border:dotted;margin-left:10%;width:750px">
+
+<th>Ships Correctly Identified</th>
+<th>Ships Incorrectly Identified</th>
+</table>
 </div>
 
 </div>
@@ -233,4 +270,12 @@ else
 <input id="nextpagesubmit" type="submit" value="Next Page"/>
 </form>
 
+<div id="bottomspacer" style="width:90%;height:50px;clear:both;">&nbsp;</div>
 
+<div id="leftfooter" style="width:1150px;float:left;height:65px;border-style:solid;border-width:thin;overflow:hidden">
+Website by fenjayminor (Twitter: <a href="http://twitter.com/fenjayminor" target="_blank">&#64;fenjayminor</a> / email fenjay at fenjaylabs). Feedback welcome!<br />
+Assets/data ©CCP hf. All rights reserved. Used with permission.<br />
+Background image by Smatilla: <a href="http://smattila.deviantart.com/" target="_blank">http://smattila.deviantart.com/</a> <br />
+Special thanks to my alliance mates at <a href="http://aba-eve.com/index.php" target="_blank">A Band Apart</a> for early testing and feedback.<br />
+</div>    
+    

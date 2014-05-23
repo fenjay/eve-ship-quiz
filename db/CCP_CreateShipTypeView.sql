@@ -14,21 +14,6 @@ difficulty integer
 );
 go
 
---upload data from local to server
-insert [fenjaylabs.com].CCP_Data.dbo.ShipTypesView
-([typeID],[ShipName],[ShipType],[description],[difficulty])
-SELECT [typeID]
-      ,[ShipName]
-      ,[ShipType]
-      ,[description]
-      ,[difficulty]
-  FROM CCP_Data.[dbo].[ShipTypesView]
-
-
-
-
---locally
-
 
 select typeID, typeName as ShipName, groupName as ShipType, t.description, 1 as difficulty
 into ShipTypesView
@@ -39,11 +24,23 @@ where g.categoryID = 6
 and t.published = 1
 GO
 
+
+
+/*
+difficulty 
+0=trivial/exclude(duplicates such as navy issue), 
+1=easy (baseline) 
+2=medium (include capital/dread/super/hookbill/slicer/comet) 
+3=hard (include pirate/rare)
+
+*/
+
 update dbo.ShipTypesView
 set difficulty = 0
 where typeID in (11936,11938,13202,17634,17636,17709,17713,17726,17728,17732,17843,26840,26842,29336,29337,29340,29344,32305,32307,
-32309,32311,33151,33153,33155,33157,32840,32842,32844,32846,32848,33099,4363,4388,32811,4005,32983,32985,32989,33190,32987,21097)
---variants: navy issue, ishukone watch etc
+32309,32311,33151,33153,33155,33157,32840,32842,32844,32846,32848,33099,4363,4388,32811,4005,32983,32985,32989,33190,32987,21097,
+672,11129,11132,11134,21097,21628,30842,33553)
+--variants: navy issue, ishukone watch, shuttles etc
 
 update dbo.ShipTypesView
 set difficulty = 2
@@ -86,18 +83,22 @@ where typeID in (615,617,635,2078,2834,2836,2863,3514,3516,3518,3532,11011,11940
     
   drop table #shiptypestemp
 
-  ----------------------------------------------
+  ----------------------
 
   
 select typeID, ShipName, difficulty from ShipTypesView 
 
-/*
-difficulty 
-0=trivial/exclude(duplicates such as navy issue), 
-1=easy (baseline) 
-2=medium (include capital/dread/super/hookbill/slicer/comet) 
-3=hard (include pirate/rare)
 
 
-*/
+
+-----------upload data from local to server-----------------------
+insert [fenjaylabs.com].CCP_Data.dbo.ShipTypesView
+([typeID],[ShipName],[ShipType],[description],[difficulty])
+SELECT [typeID]
+      ,[ShipName]
+      ,[ShipType]
+      ,[description]
+      ,[difficulty]
+  FROM CCP_Data.[dbo].[ShipTypesView]
+
 
