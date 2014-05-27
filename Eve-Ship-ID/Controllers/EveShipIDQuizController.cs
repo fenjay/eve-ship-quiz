@@ -16,10 +16,7 @@ namespace Eve_Ship_ID.Controllers
 
         public ActionResult Index()
         {
-            var settingsReader = new System.Configuration.AppSettingsReader();
-            var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
             var popData = getSingleQuestion(1);
-
 
             //Request.ServerVariables["HTTP_REFERER"]
             if (this.HttpContext.Request.QueryString["resetquiz"] == "1")
@@ -102,8 +99,10 @@ namespace Eve_Ship_ID.Controllers
             var correctItem = rand.Next(0, maxIdx);
 
             var shipName = eve_api.eve_api.GetRandomShip(1, quizLevel)[0];
-            var correctType = eve_api.eve_api.GetShipType(shipName);
-            var rawShipTypes = eve_api.eve_api.GetRandomShipType(maxIdx, correctType,quizLevel);
+            var correctType = new List<string>();
+            correctType.Add(eve_api.eve_api.GetShipType(shipName)); //this will be our correct answer
+            
+            var rawShipTypes = eve_api.eve_api.GetRandomShipType(maxIdx, quizLevel,null,null,correctType);
             
             var shipTypes = new List<string>();
             var j = 0;
@@ -115,12 +114,11 @@ namespace Eve_Ship_ID.Controllers
                 }
                 else
                 {
-                    shipTypes.Add(correctType);
+                    shipTypes.Add(correctType[0]);
                     shipTypes.Add(s);
                 }
                 j++;
             }
-
 
             return new ShipQuiz { ShipName = shipName, ShipTypeOptions = shipTypes };
         }

@@ -9,28 +9,24 @@ namespace eve_api
 {
     public static class eve_api
     {
-
         public static string GetShipType(string shipName)
         {
-            
             return GetShipFullInfo(shipName).ShipType;
         }
 
         public static int GetShipId(string shipName)
         {
-
             return GetShipFullInfo(shipName).typeID;
         }
 
         public static string GetShipDescription(string shipName)
         {
-
             return GetShipFullInfo(shipName).description;
         }
 
         public static List<String> GetRandomShip(int nbrShips, int quizLevel)
         {
-            return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel);
+            return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel, null, null,null);
         }
 
         private static ShipFullInfo GetShipFullInfo(string shipName)
@@ -87,7 +83,16 @@ namespace eve_api
             return sqlConnString;
         }
 
-        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, int quizLevel)
+        /// <summary>
+        /// Get an array of a given number of rows with a given column from the Ship Types View
+        /// </summary>
+        /// <param name="nbrShips"></param>
+        /// <param name="column"></param>
+        /// <param name="quizLevel"></param>
+        /// <param name="excludeNames"></param>
+        /// <param name="excludeIds"></param>
+        /// <returns></returns>
+        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, int quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
         {
             var ship = new List<String>();
 
@@ -96,62 +101,109 @@ namespace eve_api
             try
             {
                 sqlConn.Open();
-                var sqlCount = "select count(distinct " + column + ") from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
+
                 
-                sqlCmd.CommandText = sqlCount;
-                sqlCmd.Connection = sqlConn;
-                var shipCount = 0;
+                /*-------------GET COUNT--------------------*/
+                //var sqlCount = new StringBuilder();
+                //sqlCount.Append("select count(distinct " + column + ") from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString());
+
+                //sqlCount.Append(AppendClause<string>(excludeNames,"ShipName"));
+                
+                //sqlCmd.CommandText = sqlCount.ToString();
+                //sqlCmd.Connection = sqlConn;
+                //var shipCount = 0;
                 var rand = new Random();
-                var shipNbrsToPick = new List<int>();
+                var shipIndexesToPick = new List<int>();
 
 
-                if (Int32.TryParse(sqlCmd.ExecuteScalar().ToString(), out shipCount))
-                {
-                    var nextNbr = 0;
-                    for (var k = 0; k < nbrShips; k++)
-                    {
-                        nextNbr = rand.Next(1, shipCount);
-                        if (!shipNbrsToPick.Contains(nextNbr))
-                        {
-                            shipNbrsToPick.Add(nextNbr);
-                        }
-                        else
-                        {
-                            k--;
-                        }
-                    }
-                
-
-                
                 //if (Int32.TryParse(sqlCmd.ExecuteScalar().ToString(), out shipCount))
                 //{
-                //    for (var j = 0; j < nbrShips; j++)
-                //    {
-                        //var shipNbr = rand.Next(1, shipCount);
+                    //var nextNbr = 0;
+                    //for (var k = 0; k < nbrShips; k++)
+                    //{
+                    //    nextNbr = rand.Next(1, shipCount);
+                    //    if (!shipIndexesToPick.Contains(nextNbr))
+                    //    {
+                    //        shipIndexesToPick.Add(nextNbr);
+                    //    }
+                    //    else
+                    //    {
+                    //        k--;
+                    //    }
+                    //}
 
-                        var sql = "select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
-                        sqlCmd.CommandText = sql;
+                    /*-------------END GET COUNT--------------------*/
 
-                        sqlCmd.Connection = sqlConn;
-                        var shipReader = sqlCmd.ExecuteReader();
 
-                        var i = 0;
-                        while (shipReader.Read())
-                        {
-                            if (shipNbrsToPick.Contains(i))
-                            {
-                                ship.Add(shipReader.GetString(0));
-                            }
-                            i++;
+                    /*-------------NEW HOTNESS--------------------*/
+                var sql = new StringBuilder();
+                sql.Append("select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString());
+                sql.Append(AppendClause<string>(excludeNames,"ShipName"));
+                sql.Append(AppendClause<int>(excludeIds, "typeID"));
+                sql.Append(AppendClause<string>(excludeTypes, "ShipType"));
+                    
+                sqlCmd.CommandText = sql.ToString();
 
-                        }
-                        shipReader.Close();
-                //    }
-                }
-                else
+                sqlCmd.Connection = sqlConn;
+                var shipReader = sqlCmd.ExecuteReader();
+
+                var AllShipTypes = new List<string>();
+
+                while (shipReader.Read())
                 {
-                    return new List<string>();
+                    AllShipTypes.Add(shipReader.GetString(0));
                 }
+                shipReader.Close();
+
+                var nextNbr1 = 0;
+                for (var k = 0; k < nbrShips; k++)
+                {
+                    nextNbr1 = rand.Next(1, AllShipTypes.Count);
+                    if (!shipIndexesToPick.Contains(nextNbr1))
+                    {
+                        shipIndexesToPick.Add(nextNbr1);
+                    }
+                    else
+                    {
+                        k--;
+                    }
+                }
+
+                foreach (var j in shipIndexesToPick)
+                {
+                    ship.Add(AllShipTypes[j]);
+                }
+
+
+
+                    /*-------------END NEW HOTNESS--------------------*/
+
+
+                    /*-------------GET SHIPS--------------------*/
+                        //var sql = "select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
+                        //sqlCmd.CommandText = sql;
+
+                        //sqlCmd.Connection = sqlConn;
+                        //var shipReader = sqlCmd.ExecuteReader();
+
+                        //var i = 0;
+                        //while (shipReader.Read())
+                        //{
+                        //    if (shipIndexesToPick.Contains(i))
+                        //    {
+                        //        ship.Add(shipReader.GetString(0));
+                        //    }
+                        //    i++;
+
+                        //}
+                        //shipReader.Close();
+
+                    /*-------------END GET SHIPS--------------------*/
+                //}
+                //else
+                //{
+                //    return new List<string>();
+                //}
                 
             }
             catch (Exception ex)
@@ -166,33 +218,71 @@ namespace eve_api
             return ship;
         }
 
-        private static List<string> GetRandomFromShipTypeView(int nbrTypes, string column, string exclude, int quizLevel)
-        {
-            var startingList = GetRandomFromShipTypeView(nbrTypes + 1, "ShipType", quizLevel);
-            foreach (var item in startingList)
-            {
-                if (item == exclude)
-                {
-                    startingList.Remove(item);
-                    break;
-                }
-            }
-            if (startingList.Count != nbrTypes)
-            {
-                startingList.Remove(startingList[nbrTypes]);
-            }
-            return startingList;
-        }
+       
+        //private static List<string> GetRandomFromShipTypeView(int nbrTypes, string column, string exclude, int quizLevel)
+        //{
+        //    var startingList = GetRandomFromShipTypeView(nbrTypes + 1, "ShipType", quizLevel);
+        //    foreach (var item in startingList)
+        //    {
+        //        if (item == exclude)
+        //        {
+        //            startingList.Remove(item);
+        //            break;
+        //        }
+        //    }
+        //    if (startingList.Count != nbrTypes)
+        //    {
+        //        startingList.Remove(startingList[nbrTypes]);
+        //    }
+        //    return startingList;
+        //}
 
-        public static List<String> GetRandomShipType(int nbrShipTypes, string excludeType, int quizLevel)
-        {
-            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", excludeType, quizLevel);
-        }
+        //public static List<String> GetRandomShipType(int nbrShipTypes, string excludeType, int quizLevel)
+        //{
+        //    return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", excludeType, quizLevel);
+        //}
+
 
         public static List<String> GetRandomShipType(int nbrShipTypes, int quizLevel)
         {
-            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel);
+            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel, null, null,null);
         }
+
+        public static List<String> GetRandomShipType(int nbrShipTypes, int quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
+        {
+            return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel, excludeNames, excludeIds, excludeTypes);
+        }
+
+
+        /// <summary>
+        /// Note: will not append "where", only "and"
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="excludeList"></param>
+        /// <param name="column"></param>
+        /// <returns>SQL "and" clause</returns>
+        private static string AppendClause<T>(List<T> excludeList, string column)
+        {
+            var sb = new StringBuilder();
+
+            if (excludeList != null && excludeList.Count > 0)
+            {
+                sb.Append(" and ");
+                sb.Append(column);
+                sb.Append(" not in (");
+                
+                for (var s = 0; s < excludeList.Count; s++)
+                {
+                    if (typeof(T) == typeof(string)) { sb.Append("'"); }
+                    sb.Append(excludeList[s].ToString());
+                    if (typeof(T) == typeof(string)) { sb.Append("'"); }
+                    if (s < excludeList.Count-1) { sb.Append(","); }
+                }
+                sb.Append(")");
+            }
+            return sb.ToString();
+        }
+
 
     }
 
