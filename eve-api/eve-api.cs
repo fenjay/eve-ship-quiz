@@ -24,9 +24,9 @@ namespace eve_api
             return GetShipFullInfo(shipName).description;
         }
 
-        public static List<String> GetRandomShip(int nbrShips, int quizLevel)
+        public static List<String> GetRandomShip(int nbrShips, List<int> alreadyAnswered, int quizLevel)
         {
-            return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel, null, null,null);
+            return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel, null, alreadyAnswered, null);
         }
 
         private static ShipFullInfo GetShipFullInfo(string shipName)
@@ -45,7 +45,6 @@ namespace eve_api
             var sqlCmd = new SqlCommand();
             try
             {
-
                 sqlConn.Open();
                 var shipNameParam = new SqlParameter("ShipName", shipName);
                 var sql = "select typeID, ShipName, ShipType, description from ShipTypesView where ShipName = @ShipName";
@@ -102,46 +101,16 @@ namespace eve_api
             {
                 sqlConn.Open();
 
-                
-                /*-------------GET COUNT--------------------*/
-                //var sqlCount = new StringBuilder();
-                //sqlCount.Append("select count(distinct " + column + ") from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString());
-
-                //sqlCount.Append(AppendClause<string>(excludeNames,"ShipName"));
-                
-                //sqlCmd.CommandText = sqlCount.ToString();
-                //sqlCmd.Connection = sqlConn;
-                //var shipCount = 0;
                 var rand = new Random();
                 var shipIndexesToPick = new List<int>();
 
-
-                //if (Int32.TryParse(sqlCmd.ExecuteScalar().ToString(), out shipCount))
-                //{
-                    //var nextNbr = 0;
-                    //for (var k = 0; k < nbrShips; k++)
-                    //{
-                    //    nextNbr = rand.Next(1, shipCount);
-                    //    if (!shipIndexesToPick.Contains(nextNbr))
-                    //    {
-                    //        shipIndexesToPick.Add(nextNbr);
-                    //    }
-                    //    else
-                    //    {
-                    //        k--;
-                    //    }
-                    //}
-
-                    /*-------------END GET COUNT--------------------*/
-
-
-                    /*-------------NEW HOTNESS--------------------*/
                 var sql = new StringBuilder();
                 sql.Append("select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString());
                 sql.Append(AppendClause<string>(excludeNames,"ShipName"));
                 sql.Append(AppendClause<int>(excludeIds, "typeID"));
                 sql.Append(AppendClause<string>(excludeTypes, "ShipType"));
-                    
+
+                System.Diagnostics.Debug.Print(sql.ToString());
                 sqlCmd.CommandText = sql.ToString();
 
                 sqlCmd.Connection = sqlConn;
@@ -175,36 +144,6 @@ namespace eve_api
                 }
 
 
-
-                    /*-------------END NEW HOTNESS--------------------*/
-
-
-                    /*-------------GET SHIPS--------------------*/
-                        //var sql = "select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString();
-                        //sqlCmd.CommandText = sql;
-
-                        //sqlCmd.Connection = sqlConn;
-                        //var shipReader = sqlCmd.ExecuteReader();
-
-                        //var i = 0;
-                        //while (shipReader.Read())
-                        //{
-                        //    if (shipIndexesToPick.Contains(i))
-                        //    {
-                        //        ship.Add(shipReader.GetString(0));
-                        //    }
-                        //    i++;
-
-                        //}
-                        //shipReader.Close();
-
-                    /*-------------END GET SHIPS--------------------*/
-                //}
-                //else
-                //{
-                //    return new List<string>();
-                //}
-                
             }
             catch (Exception ex)
             {

@@ -16,7 +16,6 @@ namespace Eve_Ship_ID.Controllers
 
         public ActionResult Index()
         {
-            var popData = getSingleQuestion(1);
 
             //Request.ServerVariables["HTTP_REFERER"]
             if (this.HttpContext.Request.QueryString["resetquiz"] == "1")
@@ -28,11 +27,19 @@ namespace Eve_Ship_ID.Controllers
 
             var cookie = Request.Cookies["eveshipid.score"];
             var score = cookie == null ? string.Empty : cookie.Value;
+
+            var popData = new ShipQuiz();
+
             if (score != String.Empty)
             {
+                popData = getSingleQuestion(1,ParseOutPreviousTypeIds(score));
                 popData.score = score;
             }
-
+            else
+            {
+                popData = getSingleQuestion(1);
+            }
+            
             return View(popData);
         }
 
@@ -42,7 +49,9 @@ namespace Eve_Ship_ID.Controllers
             var cookie = new HttpCookie("eveshipid.score", endValue);
             Response.Cookies.Add(cookie);
 
-            var popData = getSingleQuestion(1);
+            var previousIds = ParseOutPreviousTypeIds(endValue);
+
+            var popData = getSingleQuestion(1,previousIds);
             popData.score = endValue;
             return View(popData);
             
@@ -90,15 +99,18 @@ namespace Eve_Ship_ID.Controllers
             }
         }
 
-
-
         private ShipQuiz getSingleQuestion(int quizLevel)
+        {
+            return getSingleQuestion(quizLevel, null);
+        }
+
+        private ShipQuiz getSingleQuestion(int quizLevel, List<int> alreadyAnswered)
         {
             var rand = new Random();
             var maxIdx = QUESTIONCOUNT-1;
             var correctItem = rand.Next(0, maxIdx);
 
-            var shipName = eve_api.eve_api.GetRandomShip(1, quizLevel)[0];
+            var shipName = eve_api.eve_api.GetRandomShip(1,alreadyAnswered, quizLevel)[0];
             var correctType = new List<string>();
             correctType.Add(eve_api.eve_api.GetShipType(shipName)); //this will be our correct answer
             
@@ -121,6 +133,29 @@ namespace Eve_Ship_ID.Controllers
             }
 
             return new ShipQuiz { ShipName = shipName, ShipTypeOptions = shipTypes };
+        }
+
+        private List<int> ParseOutPreviousTypeIds(string scoreStr)
+        {
+            var previousIds = new List<int>();
+
+
+            if (scoreStr.Length > 0)
+            {
+                var previousIdArray = scoreStr.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+                for (var i = 0; i < previousIdArray.Length; i++)
+                {
+                    if (i % 2 == 0)
+                    {
+                        var id = 0;
+                        if (Int32.TryParse(previousIdArray[i], out id)) 
+                        { 
+                            previousIds.Add(id); 
+                        }
+                    }
+                }
+            }
+            return previousIds;
         }
 
        

@@ -92,7 +92,7 @@
 
     function GetNbrAnswered() {
         var score = $("#endValue").val();
-        var scoreArray = score.split(";");
+        var scoreArray = score.split("|");
         nbrAnswered = (scoreArray.length - 1) / 2;
         return nbrAnswered;
     }
@@ -107,7 +107,7 @@
         $("#completiondiv").css("display", "inline-block");
         $("#completiondiv").css("background-color", "green");
         $("#shipdescription").css("background-color", "#002200");
-        $("#endValue").val(score + shipId + ";1;");
+        $("#endValue").val(score + shipId + "|1|");
 
     }
 
@@ -129,7 +129,7 @@
                 $("#answer" + j).css("background-color", "green");
             }
         });
-        $("#endValue").val(score + shipId + ";0;");
+        $("#endValue").val(score + shipId + "|0|");
     }
 
     function CheckAnswer(i,bar) {
@@ -157,7 +157,7 @@
     function TallyScore()
     {
         var scoreString = $("#endValue").val();
-        var bigArray = scoreString.split(";");
+        var bigArray = scoreString.split("|");
         var correctArray = [];
         var incorrectArray= [];
 

@@ -45,7 +45,7 @@ namespace Eve_Ship_ID.Models
             var correct = 0;
             var incorrect = 0;
 
-            var fullScore = score.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            var fullScore = score.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
             if (fullScore.Length % 2 != 0)  //score should be even: one id and one correct/incorrect for each question.
             {
