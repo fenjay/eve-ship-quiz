@@ -177,13 +177,31 @@
     }
 
 
+    // Determines if the passed element is overflowing its bounds,
+    // either vertically or horizontally.
+    // Will temporarily modify the "overflow" style to detect this
+    // if necessary.
+    //credit: Shog9 :: stackoverflow.com
+    function checkOverflow(el) {
+        var curOverflow = el.style.overflow;
+        if (!curOverflow || curOverflow === "visible")
+            el.style.overflow = "hidden";
+
+        var isOverflowing = el.clientWidth < el.scrollWidth
+      || el.clientHeight < el.scrollHeight;
+
+        el.style.overflow = curOverflow;
+
+        return isOverflowing;
+    }
+
 
 </script>
 
 <a name="quizloc"></a>
 
-<div id="leftheader" class="quizpageheader">
-
+<div id="quizpageheader" style="min-width:1150px;float:left;height:auto;border-style:solid;border-width:thin;overflow:hidden;padding:2px;">
+<div style="height:30%;border-style:solid;padding:2px;display:table-cell;width:575px;">
 <p id="score" class="headertext">
 @if (@Model.score.Length == 0)
 {
@@ -191,15 +209,17 @@
 }
 else
 {
-       <b>Correct: <span id="nbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="nbrincorrect">@Model.getNbrIncorrect()</span></b>
+        <b>Correct: <span id="nbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="nbrincorrect">@Model.getNbrIncorrect()</span></b>
+        <br />
+        <a class="headeranchor" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
+        
 }
-<br />
-<a class="headeranchor" href="/EveShipIDQuiz?resetquiz=1">Start Over</a>
-</p>
-</div>    
-    
-<div id="rightheader" class="quizpageheader">
-&nbsp;
+</p>    
+</div>
+<div id="advanced" style="display:none;">this is some stuff</div>
+<div style="text-align:right;display:table-cell;height:30%;border-style:solid;padding:2px;width:575px;">Roadmap<br /> 
+<a onclick='$("#advanced").css("display","inline-block")' style="cursor:pointer;cursor:hand;"> Show Advanced Features</a>
+</div>
 </div>
 
 <div id="spacer" style="width:100%;height:1px;clear:both" >&nbsp;</div>
@@ -272,7 +292,7 @@ else
 
 <div id="bottomspacer" style="width:90%;height:50px;clear:both;">&nbsp;</div>
 
-<div id="leftfooter" style="width:1150px;float:left;height:65px;border-style:solid;border-width:thin;overflow:hidden">
+<div id="footer" style="width:1150px;float:left;height:65px;border-style:solid;border-width:thin;overflow:hidden">
 Website by fenjayminor (Twitter: <a href="http://twitter.com/fenjayminor" target="_blank">&#64;fenjayminor</a> / email fenjay at fenjaylabs). Feedback welcome!<br />
 Assets/data ©CCP hf. All rights reserved. Used with permission.<br />
 Background image by Smatilla: <a href="http://smattila.deviantart.com/" target="_blank">http://smattila.deviantart.com/</a> <br />
