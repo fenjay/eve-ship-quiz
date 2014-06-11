@@ -44,10 +44,21 @@ namespace Eve_Ship_ID.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(string endValue)
+        //public ActionResult Index(string endValue)
+        public ActionResult Index(ShipQuiz quiz)
         {
+
+            var endValue = quiz.endValue;
+            
             var cookie = new HttpCookie("eveshipid.score", endValue);
-            Response.Cookies.Add(cookie);
+            if (Request.Cookies.Count > 0)
+            {
+                Response.SetCookie(cookie);
+            }
+            else
+            {
+                Response.Cookies.Add(cookie);
+            }
 
             var previousIds = ParseOutPreviousTypeIds(endValue);
 
@@ -108,7 +119,8 @@ namespace Eve_Ship_ID.Controllers
         {
             var rand = new Random();
             var maxIdx = QUESTIONCOUNT-1;
-            var correctItem = rand.Next(0, maxIdx);
+            var correctItem = rand.Next(0, maxIdx+1); //random.Next upper bound is exclusive
+            System.Diagnostics.Debug.Print("Correct item is " + correctItem);
 
             var shipName = eve_api.eve_api.GetRandomShip(1,alreadyAnswered, quizLevel)[0];
             var correctType = new List<string>();
@@ -130,6 +142,10 @@ namespace Eve_Ship_ID.Controllers
                     shipTypes.Add(s);
                 }
                 j++;
+            }
+            if (correctItem == maxIdx) //it's the last option, so was not hit in the foreach above
+            {
+                shipTypes.Add(correctType[0]);
             }
 
             return new ShipQuiz { ShipName = shipName, ShipTypeOptions = shipTypes };

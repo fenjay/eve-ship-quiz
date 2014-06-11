@@ -19,12 +19,17 @@
                 nextQuestionForm.submit();
             }
             else {
+                var resultrows = GetFinalScoreHTML();
+
                 $("#shipdescription").css("display", "none");
                 $("#innerquiz").css("display", "none");
                 $("#currentscore").css("display", "none");
                 $("#startoverlink").css("display", "none");
                 $("#score").css("display", "none");
+                //$("#resultstable").append("");
+                $("#resultstable").append(resultrows);
                 $("#quizresults").css("display", "inline-block");
+                $("#quizresults").css("border-style", "dashed");
                 
             }
         }
@@ -95,6 +100,13 @@
         var scoreArray = score.split("|");
         nbrAnswered = (scoreArray.length - 1) / 2;
         return nbrAnswered;
+    }
+
+    function GetFinalScoreHTML() {
+
+        html = "<tr><td>test1</td><td>test2</td></tr>";
+        html = html + "</table>";
+        return html;
     }
 
     function HandleRightAnswer(shipId) {
@@ -228,6 +240,7 @@ else
 
   <h2>Final Score:</h2> <b>Correct: <span id="finalnbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="finalnbrincorrect">@Model.getNbrIncorrect()</span></b>
    <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Another Round?</a>
+   <table id="resultstable"><tr><td style="width:250px">Correct Answers</td><td style="width:250px">Incorrect Answers</td></tr></table>
 
 </div>
 
@@ -284,11 +297,15 @@ else
 
 <label id="completionstatus" style="visibility:hidden">initial</label>
 
-<form action="/EveShipIDQuiz" method="post" id="nextQuestionForm" style="visibility:hidden">
+@using (Html.BeginForm("Index", "EveShipIDQuiz", FormMethod.Post, new { id = "nextQuestionForm", style = "visibility:hidden;" }))
+{
+<!--form action="/EveShipIDQuiz" method="post" id="nextQuestionForm" style="visibility:hidden"-->
 <input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
-<input id="endValue" name="endValue" type="hidden" />
+<!--input id="endValue" name="endValue" type="hidden" /-->
+@Html.HiddenFor(model => model.endValue)
 <input id="nextpagesubmit" type="submit" value="Next Page"/>
-</form>
+<!--/form-->
+}
 
 <div id="bottomspacer" style="width:90%;height:50px;clear:both;">&nbsp;</div>
 

@@ -250,6 +250,9 @@ div
 {
     display:none;
     font-size:xx-large;
+    border-style:dashed;
+    width:750px;
+    margin-left:50px;
 }
 
 p
@@ -262,5 +265,12 @@ p
     font-size:large;
     font-family:Arial;
    
+}
+
+table, th, td
+{
+    border-width:5px;
+    border-style:dotted;
+    width:100%;
 }
 
