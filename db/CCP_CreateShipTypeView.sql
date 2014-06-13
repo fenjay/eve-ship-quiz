@@ -4,15 +4,15 @@ DROP TABLE [dbo].ShipTypesView
 GO
 
 ----create table -- do not use -- use select into below
---create table dbo.ShipTypesView
---(
---TypeID integer,
---ShipName varchar(100),
---ShipType varchar(100),
---[description] nvarchar(3000),
---difficulty integer
---);
---go
+create table dbo.ShipTypesView
+(
+TypeID integer,
+ShipName varchar(100),
+ShipType varchar(100),
+[description] nvarchar(3000),
+difficulty integer
+);
+go
 
 
 select typeID, typeName as ShipName, groupName as ShipType, t.description, 1 as difficulty
@@ -93,8 +93,12 @@ where typeID in (615,617,635,2078,2834,2836,2863,3514,3516,3518,3532,11011,11940
 select typeID, ShipName, difficulty from ShipTypesView 
 order by difficulty
 
-
 -----------upload data from local to server-----------------------
+use [fenjaylabs.com].[CCP_Data]
+IF  EXISTS (SELECT * FROM sys.tables WHERE object_id = OBJECT_ID(N'[dbo].[ShipTypesView]'))
+DROP TABLE [dbo].ShipTypesView
+GO
+
 insert [fenjaylabs.com].CCP_Data.dbo.ShipTypesView
 ([typeID],[ShipName],[ShipType],[description],[difficulty])
 SELECT [typeID]
@@ -107,3 +111,12 @@ SELECT [typeID]
 
 
 
+create table CCP_Data.dbo.ShipTypesView
+(
+TypeID integer,
+ShipName varchar(100),
+ShipType varchar(100),
+[description] nvarchar(3000),
+difficulty integer
+);
+go

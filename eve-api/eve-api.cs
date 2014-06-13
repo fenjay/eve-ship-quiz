@@ -19,6 +19,78 @@ namespace eve_api
             return GetShipFullInfo(shipName).typeID;
         }
 
+
+        public static string GetShipNameCSV(string shipNamesCSV)
+        {
+            var shipIdList = new StringBuilder();
+            var shipIdArray = shipNamesCSV.Split(new char[] { ',' });
+            var shipId = 0;
+
+            //make sure they are integers. no injecty my sql!
+            foreach (var s in shipIdArray)
+            {
+                if (Int32.TryParse(s, out shipId))
+                {
+                    shipIdList.Append(shipId.ToString());
+                    shipIdList.Append(",");
+                }
+            }
+
+            if (shipIdList.Length > 0)
+            {
+                shipIdList.Remove(shipIdList.Length - 1, 1); //snip trailing comma
+            }
+
+            var sqlBuilder = new StringBuilder("select typeID, ShipName from ShipTypesView where typeID in (");
+            sqlBuilder.Append(shipIdList.ToString());
+            sqlBuilder.Append(")");
+
+            var sqlConn = new SqlConnection(GetConnectionString());
+            var sqlCmd = new SqlCommand();
+            //var shipValueList = new List<KeyValuePair<string,string>>();
+            var shipValueList = new Dictionary<string, string>();
+            var shipCSV = new StringBuilder();
+
+            try
+            {
+                sqlConn.Open();
+                sqlCmd.CommandText = sqlBuilder.ToString();
+                sqlCmd.Connection = sqlConn;
+                var shipReader = sqlCmd.ExecuteReader();
+
+                while (shipReader.Read())
+                {
+                    shipValueList.Add(shipReader.GetInt32(0).ToString(), shipReader.GetString(1));
+                }
+                shipReader.Close();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+
+            var shipName = string.Empty;
+            foreach (var s in shipIdArray)
+            {
+                shipValueList.TryGetValue(s, out shipName);
+                shipCSV.Append(shipName);
+                shipCSV.Append(",");
+            }
+
+            if (shipCSV.Length > 0)
+            {
+                shipCSV.Remove(shipCSV.Length - 1, 1); //snip trailing comma
+            }
+
+            return shipCSV.ToString();
+
+        }
+
+
         public static string GetShipDescription(string shipName)
         {
             return GetShipFullInfo(shipName).description;

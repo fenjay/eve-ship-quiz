@@ -19,7 +19,7 @@
                 nextQuestionForm.submit();
             }
             else {
-                var resultrows = GetFinalScoreHTML();
+                //var resultrows = GetFinalScoreHTML();
 
                 $("#shipdescription").css("display", "none");
                 $("#innerquiz").css("display", "none");
@@ -27,9 +27,9 @@
                 $("#startoverlink").css("display", "none");
                 $("#score").css("display", "none");
                 //$("#resultstable").append("");
-                $("#resultstable").append(resultrows);
+                //$("#resultstable").append(resultrows);
                 $("#quizresults").css("display", "inline-block");
-                $("#quizresults").css("border-style", "dashed");
+                //$("#quizresults").css("border-style", "dashed");
                 
             }
         }
@@ -104,6 +104,21 @@
 
     function GetFinalScoreHTML() {
 
+        var score = $("#endValue").val();
+        var scoreArray = score.split("|");
+        var shipIdArray = "";
+        for (var j = 0; j < scoreArray.length; j++) {
+        if(j%2 == 0)
+        {
+            shipIdArray = shipIdArray + scorearray[j] + ",";
+        }
+        }
+
+           shipIdList = $.get("/EveShipIDQuiz/GetShipNames", { id: scoreArray })
+            .done(function (shipIdList) {
+            //add to list
+            });
+        
         html = "<tr><td>test1</td><td>test2</td></tr>";
         html = html + "</table>";
         return html;
@@ -212,8 +227,8 @@
 
 <a name="quizloc"></a>
 
-<div id="quizpageheader" style="min-width:1150px;float:left;height:auto;border-style:solid;border-width:thin;overflow:hidden;padding:2px;">
-<div style="height:30%;border-style:solid;padding:2px;display:table-cell;width:575px;">
+<div id="quizpageheader" class="quizpageheader">
+<div style="height:30%;padding:2px;display:table-cell;width:575px;">
 <p id="score" class="headertext">
 @if (@Model.score.Length == 0)
 {
@@ -228,9 +243,9 @@ else
 }
 </p>    
 </div>
-<div id="advanced" style="display:none;">this is some stuff</div>
-<div style="text-align:right;display:table-cell;height:30%;border-style:solid;padding:2px;width:575px;">Roadmap<br /> 
-<a onclick='$("#advanced").css("display","inline-block")' style="cursor:pointer;cursor:hand;"> Show Advanced Features</a>
+<!--div id="advanced" style="display:none;">this is some stuff</div-->
+<div style="text-align:right;display:table-cell;height:30%;padding:2px;width:575px;"><a style="font-size:larger;font-weight:bold" href="/Roadmap">Roadmap</a><br /> 
+<!--a onclick='$("#advanced").css("display","inline-block")' style="cursor:pointer;cursor:hand;"> Show Advanced Features</a-->
 </div>
 </div>
 
@@ -240,7 +255,7 @@ else
 
   <h2>Final Score:</h2> <b>Correct: <span id="finalnbrcorrect">@Model.getNbrCorrect()</span> | Incorrect: <span id="finalnbrincorrect">@Model.getNbrIncorrect()</span></b>
    <br /><a style="vertical-align:top" href="/EveShipIDQuiz?resetquiz=1">Another Round?</a>
-   <table id="resultstable"><tr><td style="width:250px">Correct Answers</td><td style="width:250px">Incorrect Answers</td></tr></table>
+   <!--table id="resultstable"><tr><td style="width:250px">Correct Answers</td><td style="width:250px">Incorrect Answers</td></tr></table-->
 
 </div>
 
@@ -283,13 +298,6 @@ else
 
 <div id="qmarkdiv" class="qmarkdiv">
 <div id="qmarkspan" style="display:table-cell;margin-left:250px;vertical-align:middle;color:white;font-size:160px;text-align:center">?</div>
-</div>
-<div id="finalscorediv" style="width:90%;float:left;border:dotted;display:none;">
-<table style="border:dotted;margin-left:10%;width:750px">
-
-<th>Ships Correctly Identified</th>
-<th>Ships Incorrectly Identified</th>
-</table>
 </div>
 
 </div>

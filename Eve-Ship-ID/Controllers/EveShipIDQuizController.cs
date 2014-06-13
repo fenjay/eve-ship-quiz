@@ -96,6 +96,25 @@ namespace Eve_Ship_ID.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns a list of ship names in same order as the list of ship IDs
+        /// </summary>
+        /// <param name="id">CSV of ship ids</param>
+        /// <returns>CSV of ship names</returns>
+        public string GetShipNames(string id)
+        {
+            try
+            {
+                var shipNames = eve_api.eve_api.GetShipNameCSV(id);
+                return shipNames;
+            }
+            catch (Exception)
+            {
+                return "Error: ship(s) not found";
+            }
+
+        }
+
         public string GetShipDescription(string id)
         {
             //id is shipname. return value is shipId
