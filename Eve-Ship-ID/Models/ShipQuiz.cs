@@ -15,6 +15,9 @@ namespace Eve_Ship_ID.Models
         public string endValue { get; set; }
         public string chkboxValue { get; set; }
 
+        public bool quizDifficultyCaps { get; set; }
+        public bool quizDifficultyPirateRare { get; set; }
+
         public string ShipName { get; set;}
         public List<String> ShipTypeOptions { get; set; }
         public string score { get; set; }

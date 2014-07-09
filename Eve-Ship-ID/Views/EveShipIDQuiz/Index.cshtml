@@ -244,7 +244,20 @@ else
 </p>    
 </div>
 <!--div id="advanced" style="display:none;">this is some stuff</div-->
-<div style="text-align:right;display:table-cell;height:30%;padding:2px;width:575px;"><a style="font-size:larger;font-weight:bold" href="/Roadmap">Roadmap</a><br /> 
+<div style="text-align:right;display:table-cell;height:30%;padding:2px;width:575px;">
+
+@using (Html.BeginForm("Index", "EveShipIDQuiz", FormMethod.Post, new { id = "nextQuestionForm", style = "visibility:visible;" }))
+{
+<!--form action="/EveShipIDQuiz" method="post" id="nextQuestionForm" style="visibility:hidden"-->
+<input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
+<label>Include Capitals/Supers</label>
+@Html.CheckBoxFor(model => model.quizDifficultyCaps)<br />
+<label>Include Pirate/Rare</label>
+@Html.CheckBoxFor(model => model.quizDifficultyPirateRare)
+@Html.HiddenFor(model => model.endValue)
+<input id="nextpagesubmit" type="submit" value="Next Page" hidden="hidden" />
+}
+
 <!--a onclick='$("#advanced").css("display","inline-block")' style="cursor:pointer;cursor:hand;"> Show Advanced Features</a-->
 </div>
 </div>
@@ -305,22 +318,14 @@ else
 
 <label id="completionstatus" style="visibility:hidden">initial</label>
 
-@using (Html.BeginForm("Index", "EveShipIDQuiz", FormMethod.Post, new { id = "nextQuestionForm", style = "visibility:hidden;" }))
-{
-<!--form action="/EveShipIDQuiz" method="post" id="nextQuestionForm" style="visibility:hidden"-->
-<input id="startValue" name="startValue" type="hidden" value="@Model.score"/>
-<!--input id="endValue" name="endValue" type="hidden" /-->
-@Html.HiddenFor(model => model.endValue)
-<input id="nextpagesubmit" type="submit" value="Next Page"/>
-<!--/form-->
-}
 
 <div id="bottomspacer" style="width:90%;height:50px;clear:both;">&nbsp;</div>
 
-<div id="footer" style="width:1150px;float:left;height:65px;border-style:solid;border-width:thin;overflow:hidden">
+<div id="footer" style="width:1150px;float:left;height:85px;border-style:solid;border-width:thin;overflow:hidden">
 Website by fenjayminor (Twitter: <a href="http://twitter.com/fenjayminor" target="_blank">&#64;fenjayminor</a> / email fenjay at fenjaylabs). Feedback welcome!<br />
 Assets/data ©CCP hf. All rights reserved. Used with permission.<br />
-Background image by Smatilla: <a href="http://smattila.deviantart.com/" target="_blank">http://smattila.deviantart.com/</a> <br />
+Background image by Smatilla: <a href="http://smattila.deviantart.com/" target="_blank">http://smattila.deviantart.com/</a> <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank">CC BY-NC 3.0</a> <br />
 Special thanks to my alliance mates at <a href="http://aba-eve.com/index.php" target="_blank">A Band Apart</a> for early testing and feedback.<br />
+<a href="/Roadmap">Quiz Development Roadmap</a><br /> 
 </div>    
     

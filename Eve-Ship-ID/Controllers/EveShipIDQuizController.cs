@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Eve_Ship_ID.Models;
 using eve_api;
+using System.Text;
 
 namespace Eve_Ship_ID.Controllers
 {
@@ -28,6 +29,7 @@ namespace Eve_Ship_ID.Controllers
             var cookie = Request.Cookies["eveshipid.score"];
             var score = cookie == null ? string.Empty : cookie.Value;
 
+
             var popData = new ShipQuiz();
 
             if (score != String.Empty)
@@ -39,30 +41,57 @@ namespace Eve_Ship_ID.Controllers
             {
                 popData = getSingleQuestion(1);
             }
-            
+
+            var difficultyCookie = Request.Cookies["eveshipid.difficulty"];
+            var difficulty = difficultyCookie == null ? "00" : difficultyCookie.Value;
+
+            if (difficulty.Length == 2)
+            {
+                if (difficulty.Substring(0, 1) == "1")
+                {
+                    popData.quizDifficultyCaps = true;
+                }
+                if (difficulty.Substring(1, 1) == "1")
+                {
+                    popData.quizDifficultyPirateRare = true;
+                }
+            }
+           
             return View(popData);
         }
 
         [HttpPost]
-        //public ActionResult Index(string endValue)
         public ActionResult Index(ShipQuiz quiz)
         {
 
             var endValue = quiz.endValue;
             
-            var cookie = new HttpCookie("eveshipid.score", endValue);
-            if (Request.Cookies.Count > 0)
+            var newCookie = new HttpCookie("eveshipid.score", endValue);
+            var existingCookie = Request.Cookies["eveshipid.score"];
+
+            if (existingCookie != null)
             {
-                Response.SetCookie(cookie);
+                Response.SetCookie(newCookie);
             }
             else
             {
-                Response.Cookies.Add(cookie);
+                Response.Cookies.Add(newCookie);
             }
+
+            var difficultyString = new StringBuilder();
+            difficultyString.Append(quiz.quizDifficultyCaps ? "1":"0");
+            difficultyString.Append(quiz.quizDifficultyPirateRare ? "1":"0");
+
+            var newDifficultCookie = new HttpCookie("eveshipid.difficulty", difficultyString.ToString());
+            Response.SetCookie(newDifficultCookie);
 
             var previousIds = ParseOutPreviousTypeIds(endValue);
 
-            var popData = getSingleQuestion(1,previousIds);
+            var quizDifficulty = 1;
+            quizDifficulty = quiz.quizDifficultyCaps ? 2 : quizDifficulty;
+            quizDifficulty = quiz.quizDifficultyPirateRare ? 3 : quizDifficulty;
+
+            var popData = getSingleQuestion(quizDifficulty, previousIds);
             popData.score = endValue;
             return View(popData);
             
