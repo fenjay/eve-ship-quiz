@@ -9,6 +9,14 @@ namespace eve_api
 {
     public static class eve_api
     {
+        public enum QuizLevel
+        {
+            NORMAL = 0,
+            CAPS = 1,
+            PIRATE = 2,
+            CAPSPIRATE=3
+        }
+
         public static string GetShipType(string shipName)
         {
             return GetShipFullInfo(shipName).ShipType;
@@ -96,7 +104,7 @@ namespace eve_api
             return GetShipFullInfo(shipName).description;
         }
 
-        public static List<String> GetRandomShip(int nbrShips, List<int> alreadyAnswered, int quizLevel)
+        public static List<String> GetRandomShip(int nbrShips, List<int> alreadyAnswered, QuizLevel quizLevel)
         {
             return GetRandomFromShipTypeView(nbrShips, "ShipName", quizLevel, null, alreadyAnswered, null);
         }
@@ -163,7 +171,7 @@ namespace eve_api
         /// <param name="excludeNames"></param>
         /// <param name="excludeIds"></param>
         /// <returns></returns>
-        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, int quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
+        private static List<string> GetRandomFromShipTypeView(int nbrShips, string column, QuizLevel quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
         {
             var ship = new List<String>();
 
@@ -177,7 +185,7 @@ namespace eve_api
                 var shipIndexesToPick = new List<int>();
 
                 var sql = new StringBuilder();
-                sql.Append("select distinct " + column + " from dbo.ShipTypesView where difficulty > 0 and difficulty <= " + quizLevel.ToString());
+                sql.Append("select distinct " + column + " from dbo.ShipTypesView where " + QuizLevelToSQL(quizLevel));
                 sql.Append(AppendClause<string>(excludeNames,"ShipName"));
                 sql.Append(AppendClause<int>(excludeIds, "typeID"));
                 sql.Append(AppendClause<string>(excludeTypes, "ShipType"));
@@ -254,12 +262,12 @@ namespace eve_api
         //}
 
 
-        public static List<String> GetRandomShipType(int nbrShipTypes, int quizLevel)
+        public static List<String> GetRandomShipType(int nbrShipTypes, QuizLevel quizLevel)
         {
             return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel, null, null,null);
         }
 
-        public static List<String> GetRandomShipType(int nbrShipTypes, int quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
+        public static List<String> GetRandomShipType(int nbrShipTypes, QuizLevel quizLevel, List<string> excludeNames, List<int> excludeIds, List<string> excludeTypes)
         {
             return GetRandomFromShipTypeView(nbrShipTypes, "ShipType", quizLevel, excludeNames, excludeIds, excludeTypes);
         }
@@ -292,6 +300,44 @@ namespace eve_api
                 sb.Append(")");
             }
             return sb.ToString();
+        }
+
+        private static string QuizLevelToSQL(QuizLevel q)
+        {
+            var sql = string.Empty;
+
+            switch (q)
+            {
+                case QuizLevel.NORMAL:
+                    {
+                        sql = "difficulty in (1)";
+                        break;
+                    }
+                case QuizLevel.CAPS:
+                    {
+                        sql = "difficulty in (1,2)";
+                        break;
+                    }
+
+                case QuizLevel.PIRATE:
+                    {
+                        sql = "difficulty in (1,3)";
+                        break;
+                    }
+
+                case QuizLevel.CAPSPIRATE:
+                    {
+                        sql = "difficulty in (1,2,3)";
+                        break;
+                    }
+                default:
+                    {
+                        sql = "difficulty in (1)";
+                        break;
+                    }
+            }
+
+            return sql;
         }
 
 

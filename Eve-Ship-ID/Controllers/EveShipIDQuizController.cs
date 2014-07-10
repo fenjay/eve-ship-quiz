@@ -34,12 +34,12 @@ namespace Eve_Ship_ID.Controllers
 
             if (score != String.Empty)
             {
-                popData = getSingleQuestion(1,ParseOutPreviousTypeIds(score));
+                popData = getSingleQuestion(eve_api.eve_api.QuizLevel.NORMAL,ParseOutPreviousTypeIds(score));
                 popData.score = score;
             }
             else
             {
-                popData = getSingleQuestion(1);
+                popData = getSingleQuestion(eve_api.eve_api.QuizLevel.NORMAL);
             }
 
             var difficultyCookie = Request.Cookies["eveshipid.difficulty"];
@@ -79,7 +79,7 @@ namespace Eve_Ship_ID.Controllers
             }
 
             var difficultyString = new StringBuilder();
-            difficultyString.Append(quiz.quizDifficultyCaps ? "1":"0");
+            difficultyString.Append(quiz.quizDifficultyCaps ? "1":"0"); 
             difficultyString.Append(quiz.quizDifficultyPirateRare ? "1":"0");
 
             var newDifficultCookie = new HttpCookie("eveshipid.difficulty", difficultyString.ToString());
@@ -87,9 +87,7 @@ namespace Eve_Ship_ID.Controllers
 
             var previousIds = ParseOutPreviousTypeIds(endValue);
 
-            var quizDifficulty = 1;
-            quizDifficulty = quiz.quizDifficultyCaps ? 2 : quizDifficulty;
-            quizDifficulty = quiz.quizDifficultyPirateRare ? 3 : quizDifficulty;
+            var quizDifficulty = GetQuizLevelFromString(difficultyString.ToString());
 
             var popData = getSingleQuestion(quizDifficulty, previousIds);
             popData.score = endValue;
@@ -158,12 +156,12 @@ namespace Eve_Ship_ID.Controllers
             }
         }
 
-        private ShipQuiz getSingleQuestion(int quizLevel)
+        private ShipQuiz getSingleQuestion(eve_api.eve_api.QuizLevel quizLevel)
         {
             return getSingleQuestion(quizLevel, null);
         }
 
-        private ShipQuiz getSingleQuestion(int quizLevel, List<int> alreadyAnswered)
+        private ShipQuiz getSingleQuestion(eve_api.eve_api.QuizLevel quizLevel, List<int> alreadyAnswered)
         {
             var rand = new Random();
             var maxIdx = QUESTIONCOUNT-1;
@@ -220,6 +218,27 @@ namespace Eve_Ship_ID.Controllers
                 }
             }
             return previousIds;
+        }
+
+        /// <summary>
+        /// Takes a 2-character string and parses to Quiz level. e.g. 00 for normal, 10 for Caps, 01 for pirate/rare, 11 for all three)
+        /// </summary>
+        /// <param name="quizLevel"></param>
+        private eve_api.eve_api.QuizLevel GetQuizLevelFromString(string quizLevel)
+        {
+            var ql = eve_api.eve_api.QuizLevel.NORMAL;
+
+            if (quizLevel.Length == 2)
+            {
+                var caps = (quizLevel.Substring(0, 1) == "1");
+                var pirate = (quizLevel.Substring(1, 1) == "1");
+                if (caps && pirate) { ql = eve_api.eve_api.QuizLevel.CAPSPIRATE; }
+                if (caps && !pirate) { ql = eve_api.eve_api.QuizLevel.CAPS; }
+                if (!caps && pirate) { ql = eve_api.eve_api.QuizLevel.PIRATE; }
+                if (!caps && !pirate) { ql = eve_api.eve_api.QuizLevel.NORMAL; }
+            }
+
+            return ql;
         }
 
        
