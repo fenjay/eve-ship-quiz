@@ -270,10 +270,26 @@ p
    
 }
 
-table, th, td
+table
 {
     border-width:5px;
     border-style:dotted;
     width:100%;
+}
+
+.corplisting
+{
+    border-width:5px;
+    border-style:solid;
+    border-color:gray;
+    width:90%;
+    
+}
+
+td
+{
+    border-width:5px;
+    border-style:solid;
+    border-color:gray;
 }
 

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}</ProjectGuid>
+    <ProjectGuid>{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>eve_api</RootNamespace>
-    <AssemblyName>eve-api</AssemblyName>
+    <RootNamespace>DataTransfer</RootNamespace>
+    <AssemblyName>DataTransfer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -34,21 +34,14 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="eve-api.cs" />
-    <Compile Include="eve-corp-security-api.cs" />
+    <Compile Include="EveCharacterDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShipFullInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj">
-      <Project>{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}</Project>
-      <Name>DataTransfer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

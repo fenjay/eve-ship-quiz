@@ -117,12 +117,14 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\CorpSecurityController.cs" />
     <Compile Include="Controllers\EveShipIDQuizController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\RoadmapController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CorpSecurityModel.cs" />
     <Compile Include="Models\ScoreModel.cs" />
     <Compile Include="Models\Ship.cs" />
     <Compile Include="Models\ShipQuiz.cs" />
@@ -177,6 +179,10 @@
     <Content Include="Views\EveShipIDQuiz\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj">
+      <Project>{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}</Project>
+      <Name>DataTransfer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\eve-api\eve-api.csproj">
       <Project>{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}</Project>
       <Name>eve-api</Name>
@@ -184,6 +190,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Roadmap\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CorpSecurity\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

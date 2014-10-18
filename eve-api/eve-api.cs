@@ -155,7 +155,7 @@ namespace eve_api
 
         }
 
-        private static string GetConnectionString()
+        internal static string GetConnectionString()
         {
             var settingsReader = new AppSettingsReader();
             var sqlConnString = settingsReader.GetValue("ConnectionInfo", typeof(System.String)).ToString();
