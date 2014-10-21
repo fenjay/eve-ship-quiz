@@ -15,11 +15,11 @@ namespace eve_api
 
         private const string CORPROSTERURL = "https://api.eveonline.com/corp/MemberTracking.xml.aspx";
 
-        public static Dictionary<int,EveCharacterDTO> GetCorpRoster()
+        public static Dictionary<int,EveCharacterDTO> GetCorpRoster(int corpId)
         {
             var corpRoster = new Dictionary<int, EveCharacterDTO>();
 
-            var sql = "select CharacterInfoId, CorpID, CharacterId, CharacterName, CharacterApiId, CharacterApiVcode, TitlesRanks, IsProspect, IsFormerMember, IsCurrentMember, IsBlacklisted, AltMainCharacterId, Comments from CS_FJL_CharacterInfo c where c.CorpID = 98340372 and c.IsCurrentMember=1";
+            var sql = "select CharacterInfoId, CorpID, CharacterId, CharacterName, CharacterApiId, CharacterApiVcode, TitlesRanks, IsProspect, IsFormerMember, IsCurrentMember, IsBlacklisted, AltMainCharacterId, Comments from CS_FJL_CharacterInfo c where c.CorpID = " + corpId.ToString() + " and c.IsCurrentMember=1";
 
             var sqlConn = new SqlConnection(eve_api.GetConnectionString());
             var sqlCmd = new SqlCommand();
@@ -50,7 +50,7 @@ namespace eve_api
 
                     dto.comments = GetNullableString(corpListReader, 12);
 
-                    corpRoster.Add(corpListReader.GetInt32(0),dto);
+                    corpRoster.Add(corpListReader.GetInt32(2),dto);
                 }
                 corpListReader.Close();
             }
@@ -163,6 +163,171 @@ namespace eve_api
                 System.Diagnostics.Debug.Print(corpEntry.characterName + "|" + corpEntry.characterEveID);
             }
             //update into db.
+            UpsertCorpChars(updateSet, corpId);
+            
+
+        }
+
+        private static void UpsertCorpChars(List<EveCharacterDTO> theCharacters, int corpId)
+        {
+            var existingCorp = GetCorpRoster(corpId);
+            foreach (var character in theCharacters)
+            {
+                int charId = character.characterEveID;
+                if (charId == 0)
+                {
+                    //try to get the character id from the API. if success, continue. If failure, skip this character
+                }
+                
+                UpsertCorpChar(character, existingCorp.ContainsKey(charId) ? existingCorp[charId] : null);
+                
+            }
+
+
+        }
+
+        private static void UpsertCorpChar(EveCharacterDTO theNewCharacter, EveCharacterDTO theOldCharacter)
+        {
+            var sql = new StringBuilder();
+
+            if (theOldCharacter != null) //update
+            {
+                var updateAvailable = false;
+                sql.Append("update CS_FJL_CharacterInfo set ");
+                
+                if (theNewCharacter.corpID != theOldCharacter.corpID) { 
+                    sql.Append("CorpId=");
+                    sql.Append(theNewCharacter.corpID.ToString());
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                //characterId will presumably never update
+
+                if (theNewCharacter.characterApiID != theOldCharacter.characterApiID)
+                {
+                    sql.Append("CharacterApiId=");
+                    sql.Append(theNewCharacter.characterApiID);
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.characterApiVcode != theOldCharacter.characterApiVcode)
+                {
+                    sql.Append("CharacterApiVcode=");
+                    sql.Append(theNewCharacter.characterApiVcode);
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.rankTitles != theOldCharacter.rankTitles)
+                {
+                    sql.Append("TitlesRanks=");
+                    sql.Append(theNewCharacter.rankTitles);
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.prospect != theOldCharacter.prospect)
+                {
+                    sql.Append("IsProspect=");
+                    sql.Append(theNewCharacter.prospect ? "1" : "0");
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.formerMember != theOldCharacter.formerMember)
+                {
+                    sql.Append("IsFormerMember=");
+                    sql.Append(theNewCharacter.formerMember ? "1" : "0");
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.currentMember != theOldCharacter.currentMember)
+                {
+                    sql.Append("IsCurrentMember=");
+                    sql.Append(theNewCharacter.currentMember ? "1" : "0");
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.blacklist != theOldCharacter.blacklist)
+                {
+                    sql.Append("IsBlacklisted=");
+                    sql.Append(theNewCharacter.blacklist ? "1" : "0");
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.altMainCharacterId != theOldCharacter.altMainCharacterId)
+                {
+                    sql.Append("AltMainCharacterId=");
+                    sql.Append(theNewCharacter.altMainCharacterId.ToString()); 
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+
+                if (theNewCharacter.comments != theOldCharacter.comments)
+                {
+                    sql.Append("Comments=");
+                    sql.Append(theNewCharacter.comments);
+                    sql.Append(",");
+                    updateAvailable = true;
+                }
+                
+                sql.Remove(sql.Length - 1, 1); //remove comma
+                sql.Append(" where CharacterId = " + theNewCharacter.id);
+                
+                if (!updateAvailable) { return; } //bail out, no update to this one
+            }
+            else //insert
+            {
+                sql.Append("insert into CS_FJL_CharacterInfo "); 
+                sql.Append("(CorpID,CharacterId,CharacterName,CharacterApiId,CharacterApiVcode,TitlesRanks,IsProspect,IsFormerMember,IsCurrentMember,IsBlacklisted,AltMainCharacterId,Comments)");
+                sql.Append(" values (");
+                sql.Append(theNewCharacter.corpID.ToString());
+                sql.Append(",");
+                sql.Append(theNewCharacter.characterEveID.ToString());
+                sql.Append(",'");
+                sql.Append(theNewCharacter.characterName.Replace("'","''")); 
+                sql.Append("','");
+                sql.Append(theNewCharacter.characterApiID); 
+                sql.Append("','");
+                sql.Append(theNewCharacter.characterApiVcode); 
+                sql.Append("','");
+                sql.Append(theNewCharacter.rankTitles.Replace("'","''")); 
+                sql.Append("',");
+                sql.Append(theNewCharacter.prospect ? "1": "0"); 
+                sql.Append(",");
+                sql.Append(theNewCharacter.formerMember ? "1" : "0"); 
+                sql.Append(",");
+                sql.Append(theNewCharacter.currentMember ? "1" : "0"); 
+                sql.Append(",");
+                sql.Append(theNewCharacter.blacklist ? "1" : "0"); 
+                sql.Append(",");
+                sql.Append(theNewCharacter.altMainCharacterId.ToString()); 
+                sql.Append(",'");
+                sql.Append(theNewCharacter.comments.Replace("'","''")); 
+                sql.Append("')");
+                    	
+            }
+
+            var sqlConn = new SqlConnection(eve_api.GetConnectionString());
+            var sqlCmd = new SqlCommand();
+                        
+            try
+            {
+                sqlConn.Open();
+                sqlCmd.CommandText = sql.ToString();
+                sqlCmd.Connection = sqlConn;
+                var corpListReader = sqlCmd.ExecuteNonQuery();
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+
 
         }
 
@@ -220,7 +385,7 @@ namespace eve_api
             }
         }
 
-        private static int? GetNullableInt(SqlDataReader d, int index)
+        private static int GetNullableInt(SqlDataReader d, int index)
         {
             if (!d.IsDBNull(index))
             {
@@ -228,7 +393,7 @@ namespace eve_api
             }
             else
             {
-                return null;
+                return 0;
             }
         }
 
