@@ -125,6 +125,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CorpSecurityModel.cs" />
+    <Compile Include="Models\EveCharacterModel.cs" />
     <Compile Include="Models\ScoreModel.cs" />
     <Compile Include="Models\Ship.cs" />
     <Compile Include="Models\ShipQuiz.cs" />
@@ -193,6 +194,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CorpSecurity\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CorpSecurity\CorporationView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\CorpSecurity\EveCharacterEdit.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -11,6 +11,7 @@ namespace Eve_Ship_ID.Models
 
         public Dictionary<int, EveCharacterDTO> corpRoster { get; private set; }
         public string errorMessage { get; private set; }
+        public bool ValidCorpId { get; set; }  //later, add a method to query the DB for validity
 
         public bool PopulateCorpRoster(int corpId)
         {
