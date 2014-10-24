@@ -70,8 +70,6 @@ namespace Eve_Ship_ID.Controllers
             if (Int32.TryParse(id, out idParsed)) //or another valid value
             data.RetrieveCharacter(idParsed);
 
-            data.EveCharacter.characterEveID = idParsed;
-            
             return View(data);
         }
 

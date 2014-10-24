@@ -294,3 +294,11 @@ td
     margin:4px;
 }
 
+
+.div-table{display:table; border:1px solid #333333;}
+
+.div-table-caption{display:table-caption; background:#444444;}
+
+.div-table-row{display:table-row;}
+
+.div-table-col{display:table-cell; padding-left: 2px; border: 1px solid #333333;}

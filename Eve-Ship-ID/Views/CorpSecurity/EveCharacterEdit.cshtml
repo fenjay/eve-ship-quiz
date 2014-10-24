@@ -12,7 +12,51 @@
 <div class="maincontent">
 
 <img src="@Model.ImgURL" />
-<h1>Edit page for @Model.EveCharacter.characterName</h1>
 
-<a href=".?
+@using (Html.BeginForm("EveCharacterEdit", "CorpSecurity", FormMethod.Post, new { id = "EveCharacterEditForm", style = "visibility:visible;" }))
+{
+<div class="div-table">
+<div class="div-table-caption">Edit Character: @Model.EveCharacter.characterName</div>
+<div class="div-table-row">
+<div class="div-table-col">Title(s)</div>
+<div class="div-table-col">@{object titleprops = new {disabled = "disabled"};
+    @Html.TextBoxFor(model => model.EveCharacter.rankTitles,titleprops)
+}</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">API ID</div>
+<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.characterApiID)</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">API VCode</div>
+<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.characterApiVcode)</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">Is a current member</div>
+<div class="div-table-col">@Html.CheckBoxFor(model => model.EveCharacter.currentMember, new { disabled = "disabled" })</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">Is a prospect</div>
+<div class="div-table-col">@{object prospectprops = (Model.EveCharacter.currentMember) ? new { disabled = "disabled" } : null;
+    @Html.CheckBoxFor(model => model.EveCharacter.prospect, prospectprops)
+}</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">Blacklisted</div>
+<div class="div-table-col">@{object blprops = (Model.EveCharacter.currentMember) ? new { disabled = "disabled" } : null;
+    @Html.CheckBoxFor(model => model.EveCharacter.blacklist, blprops)
+}</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">Main's name (if applicable)</div>
+<div class="div-table-col">@Html.TextBoxFor(model => model.MainCharacterName)
+</div>
+</div>
+<div class="div-table-row">
+<div class="div-table-col">Comments</div>
+<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.comments)</div>
+</div>
+</div>
+}
+
 </div>

@@ -69,6 +69,44 @@ namespace eve_api
             
         }
 
+        public static EveCharacterDTO GetCharacterFromLocal(int eveLocalCharacterid)
+        {
+            var sql = "select CharacterInfoId, CorpID, CharacterName, CharacterApiId, CharacterApiVcode, TitlesRanks, IsProspect, IsFormerMember, IsCurrentMember, IsBlacklisted, AltMainCharacterId, Comments, CharacterId from CS_FJL_CharacterInfo c where c.CharacterInfoId = " + eveLocalCharacterid.ToString();
+
+            var sqlConn = new SqlConnection(eve_api.GetConnectionString());
+            var sqlCmd = new SqlCommand();
+            var charRetrieved = new EveCharacterDTO();
+
+            try
+            {
+                sqlConn.Open();
+                sqlCmd.CommandText = sql;
+                sqlCmd.Connection = sqlConn;
+                var characterReader = sqlCmd.ExecuteReader();
+                if (characterReader.Read())
+                {
+                    charRetrieved.id = characterReader.GetInt32(0);
+                    charRetrieved.corpID = GetNullableInt(characterReader, 1);
+                    charRetrieved.characterName = characterReader.GetString(2);
+                    charRetrieved.characterApiID = GetNullableString(characterReader, 3);
+                    charRetrieved.characterApiVcode = GetNullableString(characterReader, 4);
+                    charRetrieved.rankTitles = GetNullableString(characterReader, 5);
+                    charRetrieved.prospect = characterReader.GetBoolean(6);
+                    charRetrieved.formerMember = characterReader.GetBoolean(7);
+                    charRetrieved.currentMember = characterReader.GetBoolean(8);
+                    charRetrieved.blacklist = characterReader.GetBoolean(9);
+                    charRetrieved.altMainCharacterId = GetNullableInt(characterReader, 10);
+                    charRetrieved.comments = GetNullableString(characterReader, 11);
+                    charRetrieved.characterEveID = GetNullableInt(characterReader, 12);
+                }
+            }
+            finally
+            {
+                sqlConn.Close();
+            }
+            return charRetrieved;
+        }
+
         public static List<string> GetCharacterBlacklist()
         {
             return new List<string>();
@@ -111,7 +149,7 @@ namespace eve_api
 
         public static void RefreshCorpRosterFromAPI(int corpId)
         {
-            string CorpRosterURL = CORPROSTERURL + GetApiVcode(corpId);
+            string CorpRosterURL = CORPROSTERURL + GetCorpMasterApiVcode(corpId);
             System.Diagnostics.Debug.Print(CorpRosterURL);
             
             //1. update character listing. 2. update each character
@@ -163,12 +201,12 @@ namespace eve_api
                 System.Diagnostics.Debug.Print(corpEntry.characterName + "|" + corpEntry.characterEveID);
             }
             //update into db.
-            UpsertCorpChars(updateSet, corpId);
+            UpsertCorpChars(updateSet, corpId, true);
             
 
         }
 
-        private static void UpsertCorpChars(List<EveCharacterDTO> theCharacters, int corpId)
+        private static void UpsertCorpChars(List<EveCharacterDTO> theCharacters, int corpId, bool fromApiOnly)
         {
             var existingCorp = GetCorpRoster(corpId);
             foreach (var character in theCharacters)
@@ -179,14 +217,14 @@ namespace eve_api
                     //try to get the character id from the API. if success, continue. If failure, skip this character
                 }
                 
-                UpsertCorpChar(character, existingCorp.ContainsKey(charId) ? existingCorp[charId] : null);
+                UpsertCorpChar(character, existingCorp.ContainsKey(charId) ? existingCorp[charId] : null,fromApiOnly);
                 
             }
 
 
         }
 
-        private static void UpsertCorpChar(EveCharacterDTO theNewCharacter, EveCharacterDTO theOldCharacter)
+        private static void UpsertCorpChar(EveCharacterDTO theNewCharacter, EveCharacterDTO theOldCharacter, bool fromApiOnly)
         {
             var sql = new StringBuilder();
 
@@ -195,6 +233,9 @@ namespace eve_api
                 var updateAvailable = false;
                 sql.Append("update CS_FJL_CharacterInfo set ");
                 
+                //if updating from API, do not set the "extra" info such as comments
+                //if not (i.e. updating from combined) then update all
+
                 if (theNewCharacter.corpID != theOldCharacter.corpID) { 
                     sql.Append("CorpId=");
                     sql.Append(theNewCharacter.corpID.ToString());
@@ -204,23 +245,7 @@ namespace eve_api
 
                 //characterId will presumably never update
 
-                if (theNewCharacter.characterApiID != theOldCharacter.characterApiID)
-                {
-                    sql.Append("CharacterApiId=");
-                    sql.Append(theNewCharacter.characterApiID);
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
-
-                if (theNewCharacter.characterApiVcode != theOldCharacter.characterApiVcode)
-                {
-                    sql.Append("CharacterApiVcode=");
-                    sql.Append(theNewCharacter.characterApiVcode);
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
-
-                if (theNewCharacter.rankTitles != theOldCharacter.rankTitles)
+             if (theNewCharacter.rankTitles != theOldCharacter.rankTitles)
                 {
                     sql.Append("TitlesRanks=");
                     sql.Append(theNewCharacter.rankTitles);
@@ -228,53 +253,73 @@ namespace eve_api
                     updateAvailable = true;
                 }
 
-                if (theNewCharacter.prospect != theOldCharacter.prospect)
-                {
-                    sql.Append("IsProspect=");
-                    sql.Append(theNewCharacter.prospect ? "1" : "0");
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+             if (!fromApiOnly)
+             {
 
-                if (theNewCharacter.formerMember != theOldCharacter.formerMember)
-                {
-                    sql.Append("IsFormerMember=");
-                    sql.Append(theNewCharacter.formerMember ? "1" : "0");
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+                 if (theNewCharacter.characterApiID != theOldCharacter.characterApiID)
+                 {
+                     sql.Append("CharacterApiId=");
+                     sql.Append(theNewCharacter.characterApiID);
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
 
-                if (theNewCharacter.currentMember != theOldCharacter.currentMember)
-                {
-                    sql.Append("IsCurrentMember=");
-                    sql.Append(theNewCharacter.currentMember ? "1" : "0");
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+                 if (theNewCharacter.characterApiVcode != theOldCharacter.characterApiVcode)
+                 {
+                     sql.Append("CharacterApiVcode=");
+                     sql.Append(theNewCharacter.characterApiVcode);
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
 
-                if (theNewCharacter.blacklist != theOldCharacter.blacklist)
-                {
-                    sql.Append("IsBlacklisted=");
-                    sql.Append(theNewCharacter.blacklist ? "1" : "0");
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+                 if (theNewCharacter.prospect != theOldCharacter.prospect)
+                 {
+                     sql.Append("IsProspect=");
+                     sql.Append(theNewCharacter.prospect ? "1" : "0");
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
 
-                if (theNewCharacter.altMainCharacterId != theOldCharacter.altMainCharacterId)
-                {
-                    sql.Append("AltMainCharacterId=");
-                    sql.Append(theNewCharacter.altMainCharacterId.ToString()); 
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+                 if (theNewCharacter.formerMember != theOldCharacter.formerMember)
+                 {
+                     sql.Append("IsFormerMember=");
+                     sql.Append(theNewCharacter.formerMember ? "1" : "0");
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
 
-                if (theNewCharacter.comments != theOldCharacter.comments)
-                {
-                    sql.Append("Comments=");
-                    sql.Append(theNewCharacter.comments);
-                    sql.Append(",");
-                    updateAvailable = true;
-                }
+                 if (theNewCharacter.currentMember != theOldCharacter.currentMember)
+                 {
+                     sql.Append("IsCurrentMember=");
+                     sql.Append(theNewCharacter.currentMember ? "1" : "0");
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
+
+                 if (theNewCharacter.blacklist != theOldCharacter.blacklist)
+                 {
+                     sql.Append("IsBlacklisted=");
+                     sql.Append(theNewCharacter.blacklist ? "1" : "0");
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
+
+                 if (theNewCharacter.altMainCharacterId != theOldCharacter.altMainCharacterId)
+                 {
+                     sql.Append("AltMainCharacterId=");
+                     sql.Append(theNewCharacter.altMainCharacterId.ToString());
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
+
+                 if (theNewCharacter.comments != theOldCharacter.comments)
+                 {
+                     sql.Append("Comments=");
+                     sql.Append(theNewCharacter.comments);
+                     sql.Append(",");
+                     updateAvailable = true;
+                 }
+             }
                 
                 sql.Remove(sql.Length - 1, 1); //remove comma
                 sql.Append(" where CharacterId = " + theNewCharacter.id);
@@ -331,7 +376,7 @@ namespace eve_api
 
         }
 
-        private static string GetApiVcode(int corpId)
+        private static string GetCorpMasterApiVcode(int corpId)
         {
             var sql = "select CorpMasterApiId, CorpMasterApiVcode from CS_FJL_UserCorpInfo where CorpID = " + corpId;
             var masterApi = string.Empty;
@@ -372,6 +417,10 @@ namespace eve_api
             return true;
         }
 
+
+
+
+        //-------------------- Utility Methods ----------------------------//
 
         private static string GetNullableString(SqlDataReader d, int index)
         {

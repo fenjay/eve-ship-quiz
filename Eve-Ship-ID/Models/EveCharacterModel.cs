@@ -9,21 +9,21 @@ namespace Eve_Ship_ID.Models
     public class EveCharacterModel
     {
         public EveCharacterDTO EveCharacter {get;set;}
+        public string MainCharacterName { get; set; }
         public string ImgURL {get;set;}
         public const string IMG_SERVER_URL = "http://image.eveonline.com/";
 
-        public bool RetrieveCharacter(int EveCharacterId)
+        public bool RetrieveCharacter(int EveLocalCharacterId)
         {
             //if character not found, return false
 
-            EveCharacter = new EveCharacterDTO();
+            EveCharacter = eve_api.eve_corp_security_api.GetCharacterFromLocal(EveLocalCharacterId);
+            if (EveCharacter.altMainCharacterId != 0)
+            {
+                MainCharacterName = eve_api.eve_corp_security_api.GetCharacterFromLocal(EveCharacter.altMainCharacterId).characterName;
+            }
 
-            EveCharacter.characterName = "Test Name";
-            EveCharacter.characterApiID = " test api";
-            EveCharacter.characterApiVcode = "test vcode";
-            EveCharacter.rankTitles = "test titles";
-
-            ImgURL = IMG_SERVER_URL + "Character/" + EveCharacterId.ToString() + "_128.jpg" ;
+            ImgURL = IMG_SERVER_URL + "Character/" + EveCharacter.characterEveID.ToString() + "_128.jpg" ;
 
             return true;
         }

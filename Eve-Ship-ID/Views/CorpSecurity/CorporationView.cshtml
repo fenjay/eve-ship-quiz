@@ -16,7 +16,7 @@
 <tr><th>Name</th><th>Title(s)</th><th>Comments</th></tr>
 @foreach (var evechar in Model.corpRoster.Values)
 {
-        <tr><td><a href="../EveCharacterEdit/@evechar.characterEveID"> @evechar.characterName </a></td><td>@evechar.rankTitles</td><td>@evechar.comments</td></tr>
+        <tr><td><a href="../EveCharacterEdit/@evechar.id"> @evechar.characterName </a></td><td>@evechar.rankTitles</td><td>@evechar.comments</td></tr>
 }
 </table>
 }

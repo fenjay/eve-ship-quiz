@@ -34,6 +34,7 @@ namespace DataTransfer
         public int altMainCharacterId { get; set; }
         public string comments { get; set; }
         public DateTime lastUpdated { get; set; }
+        public bool ApiVerified { get; set; }
 
     }
 }
