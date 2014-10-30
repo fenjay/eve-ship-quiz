@@ -10,6 +10,7 @@
 
 
 <div class="maincontent">
+<a href = "../CorporationView/@Model.EveCharacter.corpID">&lt;&lt; Back To Corporation View</a><br /><br />
 
 <img src="@Model.ImgURL" />
 
@@ -19,9 +20,9 @@
 <div class="div-table-caption">Edit Character: @Model.EveCharacter.characterName</div>
 <div class="div-table-row">
 <div class="div-table-col">Title(s)</div>
-<div class="div-table-col">@{object titleprops = new {disabled = "disabled"};
-    @Html.TextBoxFor(model => model.EveCharacter.rankTitles,titleprops)
-}</div>
+<div class="div-table-col">
+    @Html.TextBoxFor(model => model.EveCharacter.rankTitles, new {@readonly = "readonly", style = "background-color:gray"})
+    </div>
 </div>
 <div class="div-table-row">
 <div class="div-table-col">API ID</div>
@@ -33,17 +34,17 @@
 </div>
 <div class="div-table-row">
 <div class="div-table-col">Is a current member</div>
-<div class="div-table-col">@Html.CheckBoxFor(model => model.EveCharacter.currentMember, new { disabled = "disabled" })</div>
+<div class="div-table-col">@Html.CheckBoxFor(model => model.EveCharacter.currentMember, new { @readonly = "readonly", style = "background-color:gray" })</div>
 </div>
 <div class="div-table-row">
 <div class="div-table-col">Is a prospect</div>
-<div class="div-table-col">@{object prospectprops = (Model.EveCharacter.currentMember) ? new { disabled = "disabled" } : null;
+<div class="div-table-col">@{object prospectprops = (Model.EveCharacter.currentMember) ? new {@readonly = "readonly", style = "background-color:gray"}  : null;
     @Html.CheckBoxFor(model => model.EveCharacter.prospect, prospectprops)
 }</div>
 </div>
 <div class="div-table-row">
 <div class="div-table-col">Blacklisted</div>
-<div class="div-table-col">@{object blprops = (Model.EveCharacter.currentMember) ? new { disabled = "disabled" } : null;
+<div class="div-table-col">@{object blprops = (Model.EveCharacter.currentMember) ? new { @readonly = "readonly", style = "background-color:gray" } : null;
     @Html.CheckBoxFor(model => model.EveCharacter.blacklist, blprops)
 }</div>
 </div>
@@ -54,9 +55,14 @@
 </div>
 <div class="div-table-row">
 <div class="div-table-col">Comments</div>
-<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.comments)</div>
+<div class="div-table-col">@Html.TextAreaFor(model => model.EveCharacter.comments)</div>
 </div>
 </div>
+    @Html.HiddenFor(model => model.EveCharacter.altMainCharacterId)
+    @Html.HiddenFor(model => model.EveCharacter.corpID)
+    @Html.HiddenFor(model => model.EveCharacter.characterEveID)
+    @Html.HiddenFor(model => model.EveCharacter.id)
+    <input id="submitchar" type="submit" value="Update Character" />
 }
 
 </div>

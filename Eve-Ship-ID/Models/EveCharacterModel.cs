@@ -30,6 +30,7 @@ namespace Eve_Ship_ID.Models
 
         public bool SaveCharacter()
         {
+            eve_api.eve_corp_security_api.SaveCharacter(this.EveCharacter);
             return true;
         }
     

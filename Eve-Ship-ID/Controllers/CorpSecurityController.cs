@@ -14,12 +14,9 @@ namespace Eve_Ship_ID.Controllers
         // GET: /CorpSecurity/
 
         public ActionResult Index()
-        {
-            var data = new CorpSecurityModel();
-
-            data.PopulateCorpRoster(98340372);         
-
-            return View(data);
+        {       
+            //get corp list
+            return View();
         }
 
         public ActionResult RefreshCorporation(string id)
@@ -28,6 +25,7 @@ namespace Eve_Ship_ID.Controllers
 
               var idParsed = 0;
 
+            //add bourbon and blasters for testing
               if (Int32.TryParse(id, out idParsed) && idParsed == 98340372) //or another valid value
               {
                   data.RefreshCorpRoster(idParsed);
@@ -44,15 +42,17 @@ namespace Eve_Ship_ID.Controllers
 
             if (Int32.TryParse(id,out idParsed) && idParsed == 98340372) //or another valid value
             {
-                data.ValidCorpId = true;
+                data.GetCorpInfo(idParsed);
+                if (data.corpInfo.CorpName != string.Empty)
+                {
+                    data.ValidCorpId = true;
+                    data.PopulateCorpRoster(idParsed);
+                }
+                else
+                {
+                    data.ValidCorpId = false;
+                }
 
-                //if (this.HttpContext.Request.QueryString["refresh"] == "1")
-                //{
-                //    data.RefreshCorpRoster(idParsed);
-                //}
-
-
-                data.PopulateCorpRoster(idParsed);  //(id);
             }
             else
             {
@@ -71,6 +71,16 @@ namespace Eve_Ship_ID.Controllers
             data.RetrieveCharacter(idParsed);
 
             return View(data);
+        }
+
+        [HttpPost]
+        public ActionResult EveCharacterEdit(EveCharacterModel updatedCharacter)
+        {
+            System.Diagnostics.Debug.Write(updatedCharacter.EveCharacter.comments);
+            
+            updatedCharacter.SaveCharacter();
+
+            return new RedirectResult("../CorporationView/" + updatedCharacter.EveCharacter.corpID.ToString());
         }
 
     }

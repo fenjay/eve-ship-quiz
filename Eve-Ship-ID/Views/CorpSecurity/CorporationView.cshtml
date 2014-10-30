@@ -12,6 +12,15 @@
 <div class="maincontent">
 @if (Model.ValidCorpId)
 {
+    <div style="width:400px;float:left"><img src="@Model.CorpImgURL" /> <br />Editing Corporation:<p style="font-weight:bold"> @Model.corpInfo.CorpName</p></div> 
+    if (Model.AllianceURL != string.Empty)
+    {
+    <div style="width:400px;float:right">
+    <img src ="@Model.AllianceURL" /> <br /> Alliance: <p style="font-weight:bold">@Model.corpInfo.AllianceName </p>
+    </div> 
+     }   
+
+    
 <table class = "corplisting">
 <tr><th>Name</th><th>Title(s)</th><th>Comments</th></tr>
 @foreach (var evechar in Model.corpRoster.Values)
