@@ -2,10 +2,43 @@
 @{
     ViewBag.Title = "EveCharacterEdit";
 }
-<link rel="stylesheet" type="text/css" href="Content/site.css"> 
+<script>
+ function GetApiStatus() {
+
+     characterId = $('#EveCharacter_characterEveID').val();
+     api = $('#EveCharacter_characterApiID').val();
+     vcode = $('#EveCharacter_characterApiVcode').val();
+
+     /*alert(characterId);
+     alert(api);
+     alert(vcode);
+     */
+
+     query = characterId + ',' + api + ',' + vcode;
+     //alert(query);
+     
+     $.get("../IsApiExpired/", { id: query })
+        .done(function (isapiexpired) {
+            if (isapiexpired == 'YES') {
+                $("#ApiCheckResult").append("EXPIRED");
+                $("#ApiCheckResult").css("visibility", "visible");
+                $("#checkApi").css("visibility", "hidden");
+            }
+            else {
+                $("#ApiCheckResult").append("VALID");
+                $("#ApiCheckResult").css("visibility", "visible");
+                $("#checkApi").css("visibility", "hidden");
+            }
+        }); 
+            
+}
+
+</script>
+
+
 
 <div class="siteheader">
-<a href="http://www.fenjaylabs.com"><img src="images/fenjaylabs_logo.gif" /></a>
+<a href="http://www.fenjaylabs.com"><img src="../images/fenjaylabs_logo.gif" /></a>
 </div>
 
 
@@ -25,12 +58,10 @@
     </div>
 </div>
 <div class="div-table-row">
-<div class="div-table-col">API ID</div>
-<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.characterApiID)</div>
+<div class="div-table-col">API ID <br /> ApiVCode</div>
+<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.characterApiID) <br /> @Html.TextBoxFor(model => model.EveCharacter.characterApiVcode)
+<br /> <div id="checkApi"><a onclick="GetApiStatus()" style="cursor:pointer">Check API for Validity</a></div><div id="ApiCheckResult" style="visibility:hidden;color:Red;"></div>
 </div>
-<div class="div-table-row">
-<div class="div-table-col">API VCode</div>
-<div class="div-table-col">@Html.TextBoxFor(model => model.EveCharacter.characterApiVcode)</div>
 </div>
 <div class="div-table-row">
 <div class="div-table-col">Is a current member</div>

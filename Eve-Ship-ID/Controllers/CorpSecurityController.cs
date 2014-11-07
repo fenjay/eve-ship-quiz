@@ -83,5 +83,31 @@ namespace Eve_Ship_ID.Controllers
             return new RedirectResult("../CorporationView/" + updatedCharacter.EveCharacter.corpID.ToString());
         }
 
+        public string IsApiExpired(string id)
+        {
+            if (id == null) { return "REQUIRED: characterId,api,vCode"; }
+
+            var pm = id.Split(new string[] { "," }, StringSplitOptions.None);
+
+            if ((pm.Length == 3) && (pm[0] != string.Empty) && (pm[1] != string.Empty) && (pm[2] != string.Empty))
+            {
+                var characterid = pm[0];
+                var api = pm[1];
+                var vcode = pm[2];
+
+
+                if (eve_api.eve_corp_security_api.IsCharacterAPIExpired(characterid, api, vcode))
+                {
+                    return "YES";
+                }
+                else
+                {
+                    return "NO";
+                }
+            }
+
+            return "INVALID";
+        }
+
     }
 }

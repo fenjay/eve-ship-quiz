@@ -28,6 +28,13 @@ namespace Eve_Ship_ID.Models
             return true;
         }
 
+        public bool RefreshCharacterFromAPI(int characterId)
+        {
+
+            return true;
+        }
+
+
         public bool SaveCharacter()
         {
             eve_api.eve_corp_security_api.SaveCharacter(this.EveCharacter);

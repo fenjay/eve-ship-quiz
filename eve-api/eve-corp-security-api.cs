@@ -14,6 +14,7 @@ namespace eve_api
     {
 
         private const string CORPROSTERURL = "https://api.eveonline.com/corp/MemberTracking.xml.aspx";
+        private const string CHARSHEETURL = "https://api.eveonline.com/char/CharacterSheet.xml.aspx";
 
         public static Dictionary<int,EveCharacterDTO> GetCorpRoster(int corpId)
         {
@@ -192,50 +193,14 @@ namespace eve_api
             //try catch throw. add error message in controller.
             var corpxml = GetApiXml(CorpRosterURL);
 
-            //copy each record into a DTO
-            //foreach dto: if existing, update.
-            //             if doesn't exist, create
-            //             if in table but not DTO list, mark as former member and clear current member. otherwise update
-            var nav = corpxml.CreateNavigator();
-            var updateTime = DateTime.Now;
-            var updateSet = new List<EveCharacterDTO>();
-
-            nav.MoveToRoot();
-            nav.MoveToFirstChild(); //eveapi
-            nav.MoveToFirstChild(); //currenttime
-            if (nav.Name == "currentTime")
-            {
-                updateTime = DateTime.Parse(nav.Value);
-                nav.MoveToNext(); //result
-            }
-            if(nav.Name == "result")
-            {
-                nav.MoveToFirstChild(); //rowset
-                if(nav.Name == "rowset")
-                {
-                    nav.MoveToFirstChild();  //row(s)
-                    if(nav.Name == "row")
-                    {
-                        do
-                        {
-                            var corpChar = new EveCharacterDTO();
-                            corpChar.characterName = nav.GetAttribute("name", string.Empty);
-                            corpChar.rankTitles = nav.GetAttribute("title", string.Empty);
-                            corpChar.currentMember = true;
-                            corpChar.corpID = corpId;
-                            corpChar.characterEveID = Int32.Parse(nav.GetAttribute("characterID", string.Empty));
-
-                            updateSet.Add(corpChar);
-
-                        } while (nav.MoveToNext());
-                    }
-                }
-            }
-            foreach (var corpEntry in updateSet)
-            {
-                System.Diagnostics.Debug.Print(corpEntry.characterName + "|" + corpEntry.characterEveID);
-            }
+            var updateSet = GetCorpCharsFromCorpXml(corpxml, corpId);
+            
+            //foreach (var corpEntry in updateSet)
+            //{
+            //    System.Diagnostics.Debug.Print(corpEntry.characterName + "|" + corpEntry.characterEveID);
+            //}
             //update into db.
+            
             UpsertCorpChars(updateSet, corpId, true);
             
 
@@ -424,8 +389,9 @@ namespace eve_api
             }
             else //insert
             {
+                //TODO: update to use sql parameters. test using blacklist mx page
                 sql.Append("insert into CS_FJL_CharacterInfo "); 
-                sql.Append("(CorpID,CharacterId,CharacterName,CharacterApiId,CharacterApiVcode,TitlesRanks,IsProspect,IsFormerMember,IsCurrentMember,IsBlacklisted,AltMainCharacterId,Comments)");
+                sql.Append("(CorpID,CharacterName,CharacterEveId,CharacterApiId,CharacterApiVcode,TitlesRanks,IsProspect,IsFormerMember,IsCurrentMember,IsBlacklisted,AltMainCharacterId,Comments)");
                 sql.Append(" values (");
                 sql.Append(theNewCharacter.corpID.ToString());
                 sql.Append(",");
@@ -509,15 +475,48 @@ namespace eve_api
                 sqlConn.Close();
             }
 
-            return "?keyID=" + masterApi + "&vcode=" + masterVcode;
+            return TagApiVcode(masterApi, masterVcode);
+            //return "?keyID=" + masterApi + "&vcode=" + masterVcode;
 
         }
 
+        /// <summary>
+        /// Refresh the character from the Eve API. Requires existing character.
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
         public static bool RefreshCharacterFromAPI(int characterId)
         {
+            var existingCharData = new EveCharacterDTO();
+            existingCharData = GetCharacterFromLocal(characterId);
+
+            var dataFromApi = new EveCharacterDTO();
+
+            //TODO: get xml data, update
+            //possibly write a generic xml parser returning name/value pairs and pluck what we want from the object thus created
+            //also consolidate api requests to easily swap to CREST, add user-agent, etc.
+
             return true;
         }
 
+
+        public static bool IsCharacterAPIExpired(string characterId, string apiId, string vCode)
+        {
+            var outXml = new XmlDocument();
+            //https://api.eveonline.com/char/CharacterSheet.xml.aspx?keyID=3738439&vcode=zxapPGZOy5CLDv5g8WaSB6qIF1ap6v3nOMo0n6g1lVB8QzyhietdD2jVMp0VWsQS&characterID=216517242
+
+            var charSheetURL = CHARSHEETURL + TagApiVcode(apiId, vCode) + "&characterID=" + characterId;
+            var charSheetDoc = GetApiXml(charSheetURL);
+
+            if (IsApiExpired(charSheetDoc))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
 
 
@@ -548,22 +547,138 @@ namespace eve_api
         }
 
 
-        private static XmlDocument GetApiXml(string apiUrl)
+             private static string TagApiVcode(string apiId, string vCode)
         {
-            var wr = WebRequest.Create(apiUrl);
-            var response = wr.GetResponse();
+            return "?keyID=" + apiId + "&vcode=" + vCode;
+        }
+
+ 
+
+        //------------------------- Get DTOs from API XML --------------------------------------------------
+
+             private static XmlDocument GetApiXml(string apiUrl)
+             {
+                 try
+                 {
+                     var wr = WebRequest.Create(apiUrl);
+                     //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/CorpSecurity/0.1");
+
+                     var response = wr.GetResponse();
+
+                     using (var sr = new StreamReader(response.GetResponseStream()))
+                     {
+
+                         var xmldoc = new XmlDocument();
+                         xmldoc.Load(sr);
+                         //string x = sr.ReadToEnd();
+                         return xmldoc;
+
+                     }
+                 }
+                 catch (WebException ex)
+                 {
+                     System.Diagnostics.Debug.Print("Web exception " + ((HttpWebResponse)ex.Response).StatusCode.ToString());
+                     return new XmlDocument();
+                 }
+
+             }
 
 
-            using (var sr = new StreamReader(response.GetResponseStream()))
+        private static EveCharacterDTO GetCharDtoFromXml(XmlDocument CharApiXml)
+        {
+            var theDTO = new EveCharacterDTO();
+
+
+
+            return theDTO;
+        }
+
+        private static EveCorpDTO GetCorpDtoFromXml(XmlDocument CorpApiXml)
+        {
+            var theDTO = new EveCorpDTO();
+
+
+
+            return theDTO;
+        }
+
+        private static List<EveCharacterDTO> GetCorpCharsFromCorpXml(XmlDocument CorpCharsXml, int corpId)
+        {
+            //copy each record into a DTO
+            //foreach dto: if existing, update.
+            //             if doesn't exist, create
+            //             if in table but not DTO list, mark as former member and clear current member. otherwise update
+            var nav = CorpCharsXml.CreateNavigator();
+            var updateTime = DateTime.Now;
+            var updateSet = new List<EveCharacterDTO>();
+
+            //TODO: get all the data and ignore extra
+
+            nav.MoveToRoot();
+            nav.MoveToFirstChild(); //eveapi
+            nav.MoveToFirstChild(); //currenttime
+            if (nav.Name == "currentTime")
             {
+                updateTime = DateTime.Parse(nav.Value);
+                nav.MoveToNext(); //result
+            }
+            if (nav.Name == "result")
+            {
+                nav.MoveToFirstChild(); //rowset
+                if (nav.Name == "rowset")
+                {
+                    nav.MoveToFirstChild();  //row(s)
+                    if (nav.Name == "row")
+                    {
+                        do
+                        {
+                            var corpChar = new EveCharacterDTO();
+                            corpChar.characterName = nav.GetAttribute("name", string.Empty);
+                            corpChar.rankTitles = nav.GetAttribute("title", string.Empty);
+                            corpChar.currentMember = true;
+                            corpChar.corpID = corpId;
+                            corpChar.characterEveID = Int32.Parse(nav.GetAttribute("characterID", string.Empty));
 
-                var xmldoc = new XmlDocument();
-                xmldoc.Load(sr);
-                //string x = sr.ReadToEnd();
-                return xmldoc;
+                            updateSet.Add(corpChar);
 
+                        } while (nav.MoveToNext());
+                    }
+                }
             }
 
+
+            return updateSet;
+
+        }
+
+        private static bool IsApiExpired(XmlDocument apiResult)
+        {
+            //TODO: step 1:  check for cache expiry
+            //TODO: use https://api.eveonline.com/eve/ErrorList.xml.aspx to get errors and return something customized
+
+
+            if (apiResult.ChildNodes.Count == 0) //api throws a Forbidden error, which results in empty xml
+            {
+                return true;
+            }
+
+            var nav = apiResult.CreateNavigator();
+            nav.MoveToRoot();
+            nav.MoveToFirstChild(); //eveapi
+            nav.MoveToFirstChild(); //currenttime
+            if (nav.Name == "currentTime")
+            {
+                nav.MoveToNext(); //result or error
+            }
+            if (nav.Name == "error")
+            {
+                var errorCode = nav.GetAttribute("code", string.Empty);
+                if (errorCode == "222")
+                {
+                    return true;
+                }
+            }
+            return false;  //might be some other error. check above api for codes
         }
 
 
