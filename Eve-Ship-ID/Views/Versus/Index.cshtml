@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Versus";
+}
+
+
+<script>
+    $(document).ready(function () {
+        $('#characterOne').blur(function () {
+            var charName = $('#characterOne').val();
+            //alert(charName);
+            $.get("../Versus/CharacterIdForName/", { id: charName })
+            .done(function (charid) {
+                $('#characterOneId').val(charid);
+                //alert(charid);
+                if (charid != 0) {
+                    $('#characterOneCheck').attr('src', '../images/Green_check.png');
+                    $('#characterOneCheck').attr('alt', 'Character Resolved');
+                }
+            });
+        });
+
+        $('#characterTwo').blur(function () {
+            var charName = $('#characterTwo').val();
+            //alert(charName);
+            $.get("../Versus/CharacterIdForName/", { id: charName })
+            .done(function (charid) {
+                $('#characterTwoId').val(charid);
+                // alert(charid);
+                if(charid != 0)
+                {
+                    $('#characterTwoCheck').attr('src', '../images/Green_check.png');
+                    $('#characterTwoCheck').attr('alt', 'Character Resolved');
+                }
+            });
+        });
+    });
+
+
+    function resolveCharId()
+    {
+        var charName = $('#characterOne').val();
+        alert(charName);
+        $.get("../Versus/CharacterIdForName/", { id: charName })
+        .done(function (charid) {
+            $('#characterOneId').val(charid);
+            alert(charid);
+        });
+        }
+
+    </script>
+
+<h2>Versus</h2>
+Versus stuff goes here<br />
+@using (Html.BeginForm("", "Versus", FormMethod.Post, new {id = "VersusForm", style="visibility:visible"}))
+{
+    
+    @Html.TextBox("characterOne") <img id="characterOneCheck"/>
+
+                                  @Html.TextBox("characterTwo")    <img id="characterTwoCheck" />
+    @Html.TextBox("characterOneId")
+    @Html.TextBox("characterTwoId")
+
+    <br />
+    <input type="Submit" value="Versus!" id="submitCompare" >
+}

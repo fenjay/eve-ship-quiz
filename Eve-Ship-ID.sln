@@ -1,11 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eve-Ship-ID", "Eve-Ship-ID\Eve-Ship-ID.csproj", "{CF73F714-B262-4BB8-95F5-4A35146A9C1B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eve-api", "eve-api\eve-api.csproj", "{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTransfer", "DataTransfer\DataTransfer.csproj", "{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +21,6 @@ Global
 		{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

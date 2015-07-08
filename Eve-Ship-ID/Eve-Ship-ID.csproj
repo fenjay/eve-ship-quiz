@@ -16,6 +16,10 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -117,18 +121,17 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\CorpSecurityController.cs" />
     <Compile Include="Controllers\EveShipIDQuizController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\RoadmapController.cs" />
+    <Compile Include="Controllers\VersusController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\CorpSecurityModel.cs" />
-    <Compile Include="Models\EveCharacterModel.cs" />
     <Compile Include="Models\ScoreModel.cs" />
     <Compile Include="Models\Ship.cs" />
     <Compile Include="Models\ShipQuiz.cs" />
+    <Compile Include="Models\VersusModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -180,10 +183,6 @@
     <Content Include="Views\EveShipIDQuiz\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj">
-      <Project>{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}</Project>
-      <Name>DataTransfer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\eve-api\eve-api.csproj">
       <Project>{87BFFEB8-6ABA-4479-B106-E11DA695E1FF}</Project>
       <Name>eve-api</Name>
@@ -193,13 +192,9 @@
     <Content Include="Views\Roadmap\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\CorpSecurity\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\CorpSecurity\CorporationView.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\CorpSecurity\EveCharacterEdit.cshtml" />
+    <Content Include="Views\Versus\Index.cshtml">
+      <BrowseToURL>~/Versus/</BrowseToURL>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

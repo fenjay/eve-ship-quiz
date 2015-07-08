@@ -40,15 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="eve-api.cs" />
-    <Compile Include="eve-corp-security-api.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShipFullInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DataTransfer\DataTransfer.csproj">
-      <Project>{CB007D6E-F082-48B3-A776-3CF8A1ACEC1D}</Project>
-      <Name>DataTransfer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

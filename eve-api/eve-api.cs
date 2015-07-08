@@ -5,10 +5,18 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Configuration;
 
+using System.Net;
+using System.IO;
+using System.Xml;
+using System.Xml.XPath;
+
 namespace eve_api
 {
     public static class eve_api
     {
+
+        private const string CHARACTERIDURL = "https://api.eveonline.com/eve/CharacterID.xml.aspx";  //names= comma separated
+
         public enum QuizLevel
         {
             NORMAL = 0,
@@ -338,6 +346,83 @@ namespace eve_api
             }
 
             return sql;
+        }
+
+
+        //-------------------- Versus section --------------------------------
+
+        public static int CharacterIdForName(string characterName)
+        {
+            var charIdUrl = CHARACTERIDURL + "?names=" + characterName;
+            var ApiXml = GetApiXml(charIdUrl);
+            var charId = 0;
+
+            var nav = GetAPIXmlToResultNode(ApiXml);
+            if (nav.Name == "rowset")
+            {
+                nav.MoveToFirstChild();
+            }
+            if (nav.Name == "row")
+            {
+                Int32.TryParse(nav.GetAttribute("characterID", string.Empty), out charId);
+            }
+            return charId;
+        }
+
+
+
+        private static XmlDocument GetApiXml(string apiUrl)
+        {
+            try
+            {        //disable cache timeout for now - reimplement when local caching is available
+                //use http://deanhume.com/Home/BlogPost/object-caching----net-4/37 - .net object caching
+                //if (VerifyAPICacheTimeExpired(apiUrl))
+                //{
+                    var wr = WebRequest.Create(apiUrl);
+                    //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/CorpSecurity/0.1");
+
+                    var response = wr.GetResponse();
+                    var xmldoc = new XmlDocument();
+
+                    using (var sr = new StreamReader(response.GetResponseStream()))
+                    {
+                        xmldoc.Load(sr);
+                        //string x = sr.ReadToEnd();
+                    }
+
+                    //var cachedUntil = GetCachedUntil(xmldoc);
+                    //SetCacheTime(apiUrl, cachedUntil);
+                    return xmldoc;
+                //}
+                //else
+                //{
+                //    return new XmlDocument();
+                //}
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.Print("Web exception " + ((HttpWebResponse)ex.Response).StatusCode.ToString());
+                return new XmlDocument();
+            }
+
+        }
+
+
+        private static XPathNavigator GetAPIXmlToResultNode(XmlDocument ApiXml)
+        {
+            var nav = ApiXml.CreateNavigator();
+            nav.MoveToRoot();
+            nav.MoveToFirstChild(); //eveapi
+            nav.MoveToFirstChild(); //currenttime
+            if (nav.Name == "currentTime")
+            {
+                nav.MoveToNext();
+            }
+            if (nav.Name == "result")
+            {
+                nav.MoveToFirstChild();
+            }
+            return nav;
         }
 
 
