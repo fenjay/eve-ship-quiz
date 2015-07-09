@@ -9,6 +9,7 @@ using System.Net;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
+using Newtonsoft.Json;
 
 namespace eve_api
 {
@@ -16,6 +17,9 @@ namespace eve_api
     {
 
         private const string CHARACTERIDURL = "https://api.eveonline.com/eve/CharacterID.xml.aspx";  //names= comma separated
+        private const string ZKBBASEURL = "https://zkillboard.com/api";
+        private const string ZKBLOSSESSUFFIX = "/losses/characterID/";
+        private const string ZKBKILLSSUFFIX = "/kills/characterID/";
 
         public enum QuizLevel
         {
@@ -349,27 +353,6 @@ namespace eve_api
         }
 
 
-        //-------------------- Versus section --------------------------------
-
-        public static int CharacterIdForName(string characterName)
-        {
-            var charIdUrl = CHARACTERIDURL + "?names=" + characterName;
-            var ApiXml = GetApiXml(charIdUrl);
-            var charId = 0;
-
-            var nav = GetAPIXmlToResultNode(ApiXml);
-            if (nav.Name == "rowset")
-            {
-                nav.MoveToFirstChild();
-            }
-            if (nav.Name == "row")
-            {
-                Int32.TryParse(nav.GetAttribute("characterID", string.Empty), out charId);
-            }
-            return charId;
-        }
-
-
 
         private static XmlDocument GetApiXml(string apiUrl)
         {
@@ -378,21 +361,21 @@ namespace eve_api
                 //use http://deanhume.com/Home/BlogPost/object-caching----net-4/37 - .net object caching
                 //if (VerifyAPICacheTimeExpired(apiUrl))
                 //{
-                    var wr = WebRequest.Create(apiUrl);
-                    //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/CorpSecurity/0.1");
+                var wr = WebRequest.Create(apiUrl);
+                //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/CorpSecurity/0.1");
 
-                    var response = wr.GetResponse();
-                    var xmldoc = new XmlDocument();
+                var response = wr.GetResponse();
+                var xmldoc = new XmlDocument();
 
-                    using (var sr = new StreamReader(response.GetResponseStream()))
-                    {
-                        xmldoc.Load(sr);
-                        //string x = sr.ReadToEnd();
-                    }
+                using (var sr = new StreamReader(response.GetResponseStream()))
+                {
+                    xmldoc.Load(sr);
+                    //string x = sr.ReadToEnd();
+                }
 
-                    //var cachedUntil = GetCachedUntil(xmldoc);
-                    //SetCacheTime(apiUrl, cachedUntil);
-                    return xmldoc;
+                //var cachedUntil = GetCachedUntil(xmldoc);
+                //SetCacheTime(apiUrl, cachedUntil);
+                return xmldoc;
                 //}
                 //else
                 //{
@@ -425,6 +408,84 @@ namespace eve_api
             return nav;
         }
 
+
+
+
+
+        //-------------------- Versus section -------------------------------------------------------------------------------
+
+        public static int CharacterIdForName(string characterName)
+        {
+            var charIdUrl = CHARACTERIDURL + "?names=" + characterName;
+            var ApiXml = GetApiXml(charIdUrl);
+            var charId = 0;
+
+            var nav = GetAPIXmlToResultNode(ApiXml);
+            if (nav.Name == "rowset")
+            {
+                nav.MoveToFirstChild();
+            }
+            if (nav.Name == "row")
+            {
+                Int32.TryParse(nav.GetAttribute("characterID", string.Empty), out charId);
+            }
+            return charId;
+        }
+
+        public static string GetKillboardResults(int characterId)
+        {
+            //if we leave out loss #, we just need kills. losses will include much "non-versus" data.
+            var retVal = string.Empty;
+            retVal = GetApiJson(MakeZKBURL(characterId, ZKBQueryType.Kills, true, null));
+            return retVal;
+        }
+
+
+
+        private static string GetApiJson(string apiUrl)
+        {
+            try
+            {
+                var wr = WebRequest.Create(apiUrl);
+                //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/Versus/0.1");
+
+                var response = wr.GetResponse();
+
+                using (var sr = new StreamReader(response.GetResponseStream()))
+                {
+                    return (sr.ReadToEnd());
+                }
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.Print("Web exception " + ((HttpWebResponse)ex.Response).StatusCode.ToString());
+                return string.Empty;
+            }
+        }
+
+
+        private enum ZKBQueryType
+        {
+            Kills,
+            Losses
+        }
+        private static string MakeZKBURL(int characterID, ZKBQueryType queryType, bool noItems, DateTime? startDate)
+        {
+            var sb = new StringBuilder();
+            sb.Append(ZKBBASEURL);
+            sb.Append(queryType == ZKBQueryType.Kills ? ZKBKILLSSUFFIX : ZKBLOSSESSUFFIX);
+            sb.Append(characterID.ToString());
+            sb.Append("/");
+            if (noItems) { sb.Append("no-items/"); }
+            if (startDate != null) { 
+                sb.Append("startTime/"); 
+                sb.Append(String.Format("yyyyMMDDHH", startDate));
+            }
+
+            sb.Append("/");
+            return sb.ToString();
+            
+        }
 
     }
 

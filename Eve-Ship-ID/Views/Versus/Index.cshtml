@@ -1,16 +1,18 @@
-﻿@{
+﻿@model Eve_Ship_ID.Models.VersusModel
+
+@{
     ViewBag.Title = "Versus";
 }
 
 
 <script>
     $(document).ready(function () {
-        $('#characterOne').blur(function () {
-            var charName = $('#characterOne').val();
+        $('#CharacterOneName').blur(function () {
+            var charName = $('#CharacterOneName').val();
             //alert(charName);
             $.get("../Versus/CharacterIdForName/", { id: charName })
             .done(function (charid) {
-                $('#characterOneId').val(charid);
+                $('#CharacterOneId').val(charid);
                 //alert(charid);
                 if (charid != 0) {
                     $('#characterOneCheck').attr('src', '../images/Green_check.png');
@@ -19,12 +21,12 @@
             });
         });
 
-        $('#characterTwo').blur(function () {
-            var charName = $('#characterTwo').val();
+        $('#CharacterTwoName').blur(function () {
+            var charName = $('#CharacterTwoName').val();
             //alert(charName);
             $.get("../Versus/CharacterIdForName/", { id: charName })
             .done(function (charid) {
-                $('#characterTwoId').val(charid);
+                $('#CharacterTwoId').val(charid);
                 // alert(charid);
                 if(charid != 0)
                 {
@@ -38,11 +40,11 @@
 
     function resolveCharId()
     {
-        var charName = $('#characterOne').val();
+        var charName = $('#CharacterOneName').val();
         alert(charName);
         $.get("../Versus/CharacterIdForName/", { id: charName })
         .done(function (charid) {
-            $('#characterOneId').val(charid);
+            $('#CharacterOneId').val(charid);
             alert(charid);
         });
         }
@@ -54,12 +56,20 @@ Versus stuff goes here<br />
 @using (Html.BeginForm("", "Versus", FormMethod.Post, new {id = "VersusForm", style="visibility:visible"}))
 {
     
-    @Html.TextBox("characterOne") <img id="characterOneCheck"/>
+    @Html.TextBoxFor(model => model.CharacterOneName) <img id="characterOneCheck"/>
 
-                                  @Html.TextBox("characterTwo")    <img id="characterTwoCheck" />
-    @Html.TextBox("characterOneId")
-    @Html.TextBox("characterTwoId")
+                                  @Html.TextBoxFor(model => model.CharacterTwoName)    <img id="characterTwoCheck" />
+    @Html.TextBoxFor(model => model.CharacterOneId)
+                         
+    @Html.TextBoxFor(model => model.CharacterTwoId)
 
     <br />
     <input type="Submit" value="Versus!" id="submitCompare" >
+}
+
+Player 1 number of kills: &nbsp;
+
+@if (Model != null && Model.KillboardResults != null) 
+{
+@Model.results.nbrKillsPlayerOne
 }

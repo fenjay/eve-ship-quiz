@@ -18,6 +18,13 @@ namespace Eve_Ship_ID.Controllers
             return View();
         }
 
+        [HttpPost]
+        public ActionResult Index(VersusModel vModel)
+        {
+            vModel.PopulateResultsForCharacterId(vModel.CharacterOneId);
+            return View(vModel);
+        }
+
         public string CharacterIdForName(string id)
         {
             return VersusModel.CharIdForName(id).ToString();
