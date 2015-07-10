@@ -434,9 +434,12 @@ namespace eve_api
 
         public static string GetKillboardResults(int characterId)
         {
+            var startTime = new DateTime(2015,1,1,0,0,0); //start with YTD
             //if we leave out loss #, we just need kills. losses will include much "non-versus" data.
             var retVal = string.Empty;
-            retVal = GetApiJson(MakeZKBURL(characterId, ZKBQueryType.Kills, true, null));
+            var zkbUrl = MakeZKBURL(characterId, ZKBQueryType.Kills, true, startTime); // inline this after debugging
+            System.Diagnostics.Debug.Print(zkbUrl);
+            retVal = GetApiJson(zkbUrl);
             return retVal;
         }
 
@@ -446,7 +449,9 @@ namespace eve_api
         {
             try
             {
-                var wr = WebRequest.Create(apiUrl);
+                var wr = (HttpWebRequest)HttpWebRequest.Create(apiUrl);
+                wr.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                wr.UserAgent = "fenjaylabs.com/Versus/0.1 Maintainer fenjay@fenjaylabs.com";
                 //wr.Headers.Add(HttpRequestHeader.UserAgent, "fenjaylabs.com/Versus/0.1");
 
                 var response = wr.GetResponse();
@@ -479,7 +484,7 @@ namespace eve_api
             if (noItems) { sb.Append("no-items/"); }
             if (startDate != null) { 
                 sb.Append("startTime/"); 
-                sb.Append(String.Format("yyyyMMDDHH", startDate));
+                sb.Append(String.Format("{0:yyyyMMddHHmm}", startDate));
             }
 
             sb.Append("/");

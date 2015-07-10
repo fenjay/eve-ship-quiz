@@ -21,7 +21,7 @@ namespace Eve_Ship_ID.Controllers
         [HttpPost]
         public ActionResult Index(VersusModel vModel)
         {
-            vModel.PopulateResultsForCharacterId(vModel.CharacterOneId);
+            vModel.PopulateResultsForCharacterId(vModel.CharacterOneId, vModel.CharacterTwoId);
             return View(vModel);
         }
 

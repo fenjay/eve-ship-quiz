@@ -69,7 +69,18 @@ Versus stuff goes here<br />
 
 Player 1 number of kills: &nbsp;
 
-@if (Model != null && Model.KillboardResults != null) 
+@if (Model != null && Model.resultsOne != null) 
 {
-@Model.results.nbrKillsPlayerOne
+    <p>nbr kills</p>
+@Model.resultsOne.nbrKillsPlayerOne
+    <p>Nbr times won</p>
+    @Model.resultsOne.nberTimesPlayerOneWon
+    <p>nbr 1v1s</p>
+    @Model.resultsOne.nbr1v1s
+    <p>nbr 1v2s</p>
+    @Model.resultsOne.nbr1v2s
+    <p>nbr 1v3+s</p>
+    @Model.resultsOne.nbr1vManys
+
+
 }
