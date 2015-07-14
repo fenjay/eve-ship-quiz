@@ -18,6 +18,16 @@
                     $('#characterOneCheck').attr('src', '../images/Green_check.png');
                     $('#characterOneCheck').attr('alt', 'Character Resolved');
                 }
+                else {
+                    $('#characterOneCheck').attr('src', '../images/600px-Red_x.svg.png');
+                    $('#characterOneCheck').attr('alt', 'Character Not Found');
+                }
+                /*
+                if($('#CharacterOneId').val() != 0 && $('#CharacterTwoId').val() != 0)
+                {
+                    $('#submitCompare').removeAttr('disabled');
+                }
+                */
             });
         });
 
@@ -33,8 +43,31 @@
                     $('#characterTwoCheck').attr('src', '../images/Green_check.png');
                     $('#characterTwoCheck').attr('alt', 'Character Resolved');
                 }
+                else {
+                    $('#characterTwoCheck').attr('src', '../images/600px-Red_x.svg.png');
+                    $('#characterTwoCheck').attr('alt', 'Character Not Found');
+                }
+                /*
+                if ($('#CharacterOneId').val() != 0 && $('#CharacterTwoId').val() != 0) {
+                    $('#submitCompare').attr('disabled', 'false');
+                }
+                if ($('#CharacterOneId').val() != 0 && $('#CharacterTwoId').val() != 0) {
+                    $('#submitCompare').removeAttr('disabled');
+                }
+                */
             });
         });
+
+        $('#CharacterOneName').keypress(function () {
+            $('#characterOneCheck').attr('src', '');
+            $('#characterOneCheck').attr('alt', '');
+        });
+
+        $('#CharacterTwoName').keypress(function () {
+            $('#characterTwoCheck').attr('src', '');
+            $('#characterTwoCheck').attr('alt', '');
+        });
+
     });
 
 
@@ -52,35 +85,117 @@
     </script>
 
 <h2>Versus</h2>
-Versus stuff goes here<br />
-@using (Html.BeginForm("", "Versus", FormMethod.Post, new {id = "VersusForm", style="visibility:visible"}))
-{
-    
-    @Html.TextBoxFor(model => model.CharacterOneName) <img id="characterOneCheck"/>
+<table style="width:75%;border:thin">
 
-                                  @Html.TextBoxFor(model => model.CharacterTwoName)    <img id="characterTwoCheck" />
-    @Html.TextBoxFor(model => model.CharacterOneId)
-                         
-    @Html.TextBoxFor(model => model.CharacterTwoId)
+    @using (Html.BeginForm("", "Versus", FormMethod.Post, new { id = "VersusForm", style = "visibility:visible" }))
+    {
+        <tr>
+            <td>
+                @Html.TextBoxFor(model => model.CharacterOneName)
+                <img id="characterOneCheck" src="@(Model != null && Model.CharacterOneName != "" ? "../images/Green_check.png" : "")" />
 
-    <br />
-    <input type="Submit" value="Versus!" id="submitCompare" >
-}
+            </td>
+            <td>
 
-Player 1 number of kills: &nbsp;
+                @Html.TextBoxFor(model => model.CharacterTwoName)
+                <img id="characterTwoCheck" src="@(Model != null && Model.CharacterTwoName != "" ? "../images/Green_check.png" : "")" />
+        </tr>
+        <tr>
+            <td>
 
-@if (Model != null && Model.resultsOne != null) 
-{
-    <p>nbr kills</p>
-@Model.resultsOne.nbrKillsPlayerOne
-    <p>Nbr times won</p>
-    @Model.resultsOne.nberTimesPlayerOneWon
-    <p>nbr 1v1s</p>
-    @Model.resultsOne.nbr1v1s
-    <p>nbr 1v2s</p>
-    @Model.resultsOne.nbr1v2s
-    <p>nbr 1v3+s</p>
-    @Model.resultsOne.nbr1vManys
+                @Html.HiddenFor(model => model.CharacterOneId)
+
+                @Html.HiddenFor(model => model.CharacterTwoId)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="Submit" value="Versus!" id="submitCompare">
+                <!--disabled="(Model != null && Model.CharacterOneId != 0 && Model.CharacterTwoId != 0 ? "false" : "true")-->
+            </td>
+        </tr>
+    }
+
+</table>
 
 
-}
+
+
+
+
+    @if (Model != null && Model.resultsOne != null && Model.resultsTwo != null)
+    {
+
+        <table style="width:75%;border:thin">
+            <tr>
+                <td>
+                    @Model.CharacterOneName
+                </td>
+                <td>
+                    @Model.CharacterTwoName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Total Number of kills: &nbsp;
+                    @Model.resultsOne.nbrTotalKills
+                </td>
+
+                <td>
+                    Total Number of kills: &nbsp;
+                    @Model.resultsTwo.nbrTotalKills
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Number of times won engagements versus this opponent&nbsp;
+                    @Model.resultsOne.nbrTimesWon
+                </td>
+                <td>
+                    Number of times won engagements versus this opponent&nbsp;
+                    @Model.resultsTwo.nbrTimesWon
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Number of 1v1s versus this opponent&nbsp;
+                    @Model.resultsOne.nbr1v1s
+                </td>
+                <td>
+                    Number of 1v1s versus this opponent&nbsp;
+                    @Model.resultsTwo.nbr1v1s
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Number of 1v2a versus this opponent&nbsp;
+                    @Model.resultsOne.nbr1v2s
+                </td>
+                <td>
+                    Number of 1v2s versus this opponent&nbsp;
+                    @Model.resultsTwo.nbr1v2s
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    Number of 1v3 or more versus this opponent:&nbsp;
+                    @Model.resultsOne.nbr1vManys
+                </td>
+                <td>
+                    Number of 1v3 or more versus this opponent:&nbsp;
+                    @Model.resultsTwo.nbr1vManys
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Average number pilots on all kills&nbsp;
+                    @Model.resultsOne.averagePilotsOnKills
+                </td>
+                <td>
+                    Average number pilots on all kills&nbsp;
+                    @Model.resultsTwo.averagePilotsOnKills
+                </td>
+            </tr>
+        </table>
+    }

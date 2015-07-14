@@ -24,18 +24,18 @@ namespace Eve_Ship_ID.Models
            most popular systems
            links to eve-who
         * */
-            public string playerOne { get; set; }
+            public string playerName { get; set; }
             //public string playerTwo { get; set; }
-            public int nbrKillsPlayerOne { get; set; }
+            public int nbrTotalKills { get; set; }
             //public int nbrKillsPlayerTwo { get; set; }
             public int nbr1v1s { get; set; }
             public int nbr1v2s { get; set; }
             public int nbr1vManys { get; set; }
-            public int nberTimesPlayerOneWon { get; set; }
+            public int nbrTimesWon { get; set; }
             //public int nbrTimesPlayerTwoWon { get; set; }
-            public int averagePilotsOnKillPlayerOne { get; set; }
+            public int averagePilotsOnKills { get; set; }
             //public int averagePilotsOnKillPlayerTwo { get; set; }
-            public string PopularSystem1 { get; set; }
+            public string PopularSystem { get; set; }
 
         }
 
@@ -65,42 +65,45 @@ namespace Eve_Ship_ID.Models
         {
             resultsOne = new ResultsDTO();
             resultsTwo = new ResultsDTO();
-            resultsOne.playerOne = CharacterOneName; //maybe not needed. I already have this name accessible to view
-            resultsTwo.playerOne = CharacterTwoName;
+            resultsOne.playerName = CharacterOneName; 
+            resultsTwo.playerName = CharacterTwoName;
+            
+            //it'd be cool to correct the capitalization on the name somehow...
 
             var KillboardResultsOne = eve_api.eve_api.GetKillboardResults(characterIdOne);
-            var KillboardResultsTwo = eve_api.eve_api.GetKillboardResults(characterIdOne);
-            CalculateResults(KillboardResultsOne, KillboardResultsTwo);
+            var KillboardResultsTwo = eve_api.eve_api.GetKillboardResults(characterIdTwo);
+            CalculateResults(KillboardResultsOne, resultsOne, resultsTwo.playerName);
+            CalculateResults(KillboardResultsTwo, resultsTwo, resultsOne.playerName);
             
         }
 
-        /// <summary>
-        /// Calculates results based on JSON returned from killboard (zkb)
-        /// </summary>
-        /// <param name="kbJsonResults"></param>
-        /// <returns>A ResultsDTO of the calculated stuff</returns>
-        private void CalculateResults(string kbJsonResultsOne, string kbJsonResultsTwo)
+        private void CalculateResults(string kbJsonResultsOne, ResultsDTO results, string opponentName)
         {
+            var avgPilots = new List<int>();
+            
+            //----player one ---//
             var jsonObject = JArray.Parse(kbJsonResultsOne);
             foreach (var j in jsonObject)
             {
                 //when stringcomparing, let's ignore case because people might type it in wrong, and the api ignores case
-                if (CharacterTwoName.ToLower() == ((string)j["victim"]["characterName"]).ToLower())
+                if (opponentName.ToLower() == ((string)j["victim"]["characterName"]).ToLower())
                 {
-                    resultsOne.nberTimesPlayerOneWon++;
-                    if (j["attackers"].Count() == 1) { resultsOne.nbr1v1s++; }
-                    if (j["attackers"].Count() == 2) { resultsOne.nbr1v2s++; }
-                    if (j["attackers"].Count() > 2) { resultsOne.nbr1vManys++; }
+                    results.nbrTimesWon++;
+                    if (j["attackers"].Count() == 1) { results.nbr1v1s++; }
+                    if (j["attackers"].Count() == 2) { results.nbr1v2s++; }
+                    if (j["attackers"].Count() > 2) { results.nbr1vManys++; }
                 }
+                avgPilots.Add(j["attackers"].Count());
 
-                //----player one ---//
-                // total kills
-                resultsOne.nbrKillsPlayerOne = jsonObject.Count;
-
-                //nbr times 
-
-                // return resultsOne;
             }
+
+            var total = 0;
+            foreach(var nbrAttackers in avgPilots)
+            {
+                total += nbrAttackers;
+            }
+            results.averagePilotsOnKills = total / avgPilots.Count;
+            results.nbrTotalKills = jsonObject.Count;
         }
 
        

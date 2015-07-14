@@ -21,13 +21,23 @@ namespace Eve_Ship_ID.Controllers
         [HttpPost]
         public ActionResult Index(VersusModel vModel)
         {
+            vModel.CharacterOneName = vModel.CharacterOneName.Trim();
+            vModel.CharacterTwoName = vModel.CharacterTwoName.Trim();
+
             vModel.PopulateResultsForCharacterId(vModel.CharacterOneId, vModel.CharacterTwoId);
             return View(vModel);
         }
 
         public string CharacterIdForName(string id)
         {
-            return VersusModel.CharIdForName(id).ToString();
+            if (id == string.Empty)   //let's avoid unnecessary API calls
+            { 
+                return "0"; 
+            }
+            else
+            { 
+                return VersusModel.CharIdForName(id).ToString(); 
+            }
         }
 
     }
