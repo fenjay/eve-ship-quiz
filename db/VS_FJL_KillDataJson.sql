@@ -1,0 +1,22 @@
+DROP TABLE [dbo].[VS_FJL_KillDataJson]
+
+/****** Object:  Table [dbo].[VS_FJL_KillDataJson]    Script Date: 7/23/2015 12:28:18 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[VS_FJL_KillDataJson](
+	[KillID] [int] NOT NULL,
+	[KillJSON] [nvarchar](max) NOT NULL,
+	[AttackingCharacterID] [int] NOT NULL,
+ CONSTRAINT [PK_VS_FJL_KillDataJson] PRIMARY KEY CLUSTERED 
+(
+	[KillID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+

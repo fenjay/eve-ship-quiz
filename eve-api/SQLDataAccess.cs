@@ -306,13 +306,14 @@ namespace eve_api
             var id = new SqlParameter("charId", characterId);
             var name = new SqlParameter("charName", characterName);
             var sql = "insert into VS_FJL_CharacterIDName (CharacterId, CharacterName) values (@charId,@charName)";
-
+            
+            SqlConnection conn;
+            SqlCommand cmd;
+            GetDataAccessObjects(out conn, out cmd);
+            
             try
             {
-                SqlConnection conn;
-                SqlCommand cmd;
-                GetDataAccessObjects(out conn, out cmd);
-                
+             
                 using (conn)
                 {
                     cmd.Parameters.Add(id);
@@ -327,8 +328,112 @@ namespace eve_api
                 System.Diagnostics.Debug.Print(ex.Message);
                 return false;
             }
+            finally
+            {
+                conn.Close();
+            }
             return true;
             
         }
+
+        public int? GetMaxKillIdFromLocal(int characterId)
+        {
+            int? maxKillId = null;
+
+
+            SqlConnection conn;
+            SqlCommand cmd;
+            GetDataAccessObjects(out conn, out cmd);
+
+            try
+            {
+                var charId = new SqlParameter("charId", characterId);
+
+                using(conn)
+                {
+                    cmd.CommandText = "select max(KillID) from VS_FJL_KillDataJson where AttackingCharacterID = @charId";
+                    cmd.Parameters.Add(charId);
+                    var oKillId = cmd.ExecuteScalar();
+                    if (!(oKillId is System.DBNull))
+                    {
+                        maxKillId = Int32.Parse(oKillId.ToString());
+                        //else, leave it null
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Print(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return maxKillId;
+        }
+
+        public List<string> GetLocalKillResults(int characterId)
+        {
+            SqlConnection conn;
+            SqlCommand cmd;
+            GetDataAccessObjects(out conn, out cmd);
+            var kills = new List<string>();
+
+            
+            try
+            {
+                var charId = new SqlParameter("charId", characterId);
+                cmd.Parameters.Add(charId);
+                cmd.CommandText = "select KillJSON from VS_FJL_KillDataJson where AttackingCharacterID = @charId";
+
+                var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    kills.Add(reader.GetString(0));
+                }
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.Print(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return kills;
+        }
+
+        public void InsertKillJson(int characterId, int killID, string killJson)
+        {
+            SqlConnection conn;
+            SqlCommand cmd;
+            GetDataAccessObjects(out conn, out cmd);
+               
+            try
+            {
+                SqlParameter[] inputparams = {new SqlParameter("killJson", killJson),new SqlParameter("killID", killID),new SqlParameter("characterId", characterId)};
+
+                //var paramKillJson = new SqlParameter("killJson", killJson);
+                //var paramKillID = new SqlParameter("killID", killID);
+                //var paramCharacterId = new SqlParameter("characterId", characterId);
+
+                cmd.Parameters.AddRange(inputparams);
+                cmd.CommandText = "insert into VS_FJL_KillDataJson (KillID, KillJSON, AttackingCharacterID) values (@killID, @killJson, @characterId)";
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Print(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+        }
+
     }
 }

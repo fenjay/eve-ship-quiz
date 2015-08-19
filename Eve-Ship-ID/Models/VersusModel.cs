@@ -102,8 +102,13 @@ namespace Eve_Ship_ID.Models
             {
                 total += nbrAttackers;
             }
-            results.averagePilotsOnKills = total / avgPilots.Count;
+
             results.nbrTotalKills = jsonObject.Count;
+            if (avgPilots.Count > 0)
+            {
+                results.averagePilotsOnKills = total / avgPilots.Count;
+            }
+            
         }
 
        
